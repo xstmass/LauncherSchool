@@ -76,19 +76,19 @@ public final class EXEL4JLauncherBinary extends LauncherBinary {
 
         // Prepare version info (product)
         VersionInfo info = new VersionInfo();
-        info.setProductName("sashok724's Launcher v3");
+        info.setProductName("KeeperJerry's Launcher");
         info.setProductVersion("1.0.0.0");
         info.setTxtProductVersion(Launcher.VERSION + ", build " + Launcher.BUILD);
 
         // Prepare version info (file)
-        info.setFileDescription("sashok724's Launcher v3");
+        info.setFileDescription("KeeperJerry's Launcher");
         info.setFileVersion("1.0.0.0");
         info.setTxtFileVersion(Launcher.VERSION + ", build " + Launcher.BUILD);
         info.setOriginalFilename(binaryFile.getFileName().toString());
 
         // Prepare version info (misc)
         info.setInternalName("Launcher");
-        info.setCopyright("© sashok724 LLC");
+        info.setCopyright("© KeeperJerry & sashok724 LLC");
         info.setTrademarks("This product is licensed under WTFPL 2.0");
         info.setLanguage(LanguageID.ENGLISH_US);
         config.setVersionInfo(info);

@@ -231,7 +231,7 @@ public final class LogHelper {
 
     private static String ansiFormatVersion(String product) {
         return new Ansi().bold(). // Setup
-            fgBright(Color.MAGENTA).a("sashok724's "). // sashok724's
+            fgBright(Color.MAGENTA).a("KeeperJerry's "). // Autor mirror
             fgBright(Color.CYAN).a(product). // Product
             fgBright(Color.WHITE).a(" v").fgBright(Color.BLUE).a(Launcher.VERSION). // Version
             fgBright(Color.WHITE).a(" (build #").fgBright(Color.RED).a(Launcher.BUILD).fgBright(Color.WHITE).a(')'). // Build#
@@ -246,7 +246,7 @@ public final class LogHelper {
     }
 
     private static String formatVersion(String product) {
-        return String.format("sashok724's %s v%s (build #%s)", product, Launcher.VERSION, Launcher.BUILD);
+        return String.format("KeeperJerry's %s v%s (build #%s)", product, Launcher.VERSION, Launcher.BUILD);
     }
 
     static {
