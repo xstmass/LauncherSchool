@@ -209,7 +209,8 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
         MC1122("1.12.2", 340),
         MC1132("1.13.2", 404),
         MC1144("1.14.4", 498),
-        MC1152("1.15.2", 578); // Это так трудно добавить?
+        MC1152("1.15.2", 578),
+        MC1160("1.16", 734); // Вангую, будет релиз - сверю
         private static final Map<String, Version> VERSIONS;
         public final String name;
         public final int protocol;
