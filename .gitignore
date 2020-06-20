@@ -7,6 +7,8 @@
 !.idea/modules.xml
 
 build/mapping.pro
+build/production/*
+build/test/*
 buildnumber
 
 Launcher.jar

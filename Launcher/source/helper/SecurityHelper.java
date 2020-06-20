@@ -46,7 +46,7 @@ public final class SecurityHelper {
     @LauncherAPI public static final int CRYPTO_MAX_LENGTH = 2048;
 
     // Certificate constants
-    @LauncherAPI public static final String CERTIFICATE_DIGEST = "fca9659209c6b3b510d9d0e328f37ea0e8df11b6f897c70e4fce440501f43075";
+    @LauncherAPI public static final String CERTIFICATE_DIGEST = "b87c079e3bf6e709860e05e283678c857b6a27916c2ba280a212f78f1a2ec20a";
     @LauncherAPI public static final String HEX = "0123456789abcdef";
 
     // Random generator constants
