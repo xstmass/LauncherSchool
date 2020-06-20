@@ -6,10 +6,7 @@
 !.idea/misc.xml
 !.idea/modules.xml
 
-build
-!build/libraries/*
-!build/dictionary.pro
-!build/proguard.jar
+build/mapping.pro
 buildnumber
 
 Launcher.jar
