@@ -1,13 +1,13 @@
 // ====== LAUNCHER CONFIG ====== //
 var config = {
-    dir: "launcher", // Launcher directory
-    title: "sashok724's Launcher", // Window title
+    dir: "kj-launcher", // Launcher directory
+    title: "sashko724's Launcher", // Window title
     icons: [ "favicon.png" ], // Window icon paths
 
     // Auth config
-    newsURL: "https://launcher.sashok724.net/", // News WebView URL
-    linkText: "Бесплатные окна", // Text for link under "Auth" button
-    linkURL: new java.net.URL("http://bit.ly/1SP0Rl8"), // URL for link under "Auth" button
+    newsURL: "https://launcher-sashok724.keeperjerry.ru/", // News WebView URL
+    linkText: "Забыли пароль?", // Text for link under "Auth" button
+    linkURL: new java.net.URL("https://keeperjerry.ru/"), // URL for link under "Auth" button
 
     // Settings defaults
     settingsMagic: 0xC0DE5, // Ancient magic, don't touch

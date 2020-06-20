@@ -7,8 +7,10 @@
 !.idea/modules.xml
 
 build
+!build/libraries/*
+!build/dictionary.pro
+!build/proguard.jar
 buildnumber
 
 Launcher.jar
-LauncherAuthlib.jar
 LaunchServer.jar
