@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # История одного buildnumber
-echo -n $(($(cat buildnumber | cut -d ',' -f 1)+1)), $(date +'%d.%m.%Y') > buildnumber.txt
-mv buildnumber.txt buildnumber
+#echo -n $(($(cat buildnumber | cut -d ',' -f 1)+1)), $(date +'%d.%m.%Y') > buildnumber.txt
+#mv buildnumber.txt buildnumber
 
 # Build Launcher.jar
 echo Building Launcher.jar...
