@@ -267,7 +267,7 @@ public final class ClientLauncher {
         Collections.addAll(args, "--assetsDir", params.assetDir.toString());
         Collections.addAll(args, "--resourcePackDir", params.clientDir.resolve(RESOURCEPACKS_DIR).toString());
         if (version.compareTo(Version.MC194) >= 0) { // Just to show it in debug screen
-            Collections.addAll(args, "--versionType", "Launcher v" + Launcher.VERSION);
+            Collections.addAll(args, "--versionType", "KJ-Launcher v" + Launcher.VERSION);
         }
 
         // Add server args

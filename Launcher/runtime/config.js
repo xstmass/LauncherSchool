@@ -1,7 +1,7 @@
 // ====== LAUNCHER CONFIG ====== //
 var config = {
     dir: "kj-launcher", // Launcher directory
-    title: "sashko724's Launcher", // Window title
+    title: "KeeperJerry's Launcher", // Window title
     icons: [ "favicon.png" ], // Window icon paths
 
     // Auth config
