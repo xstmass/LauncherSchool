@@ -30,13 +30,7 @@ import launchserver.command.basic.LogConnectionsCommand;
 import launchserver.command.basic.RebindCommand;
 import launchserver.command.basic.StopCommand;
 import launchserver.command.basic.VersionCommand;
-import launchserver.command.hash.DownloadAssetCommand;
-import launchserver.command.hash.DownloadClientCommand;
-import launchserver.command.hash.IndexAssetCommand;
-import launchserver.command.hash.SyncBinariesCommand;
-import launchserver.command.hash.SyncProfilesCommand;
-import launchserver.command.hash.SyncUpdatesCommand;
-import launchserver.command.hash.UnindexAssetCommand;
+import launchserver.command.hash.*;
 import launchserver.command.legacy.DumpBinaryAuthHandler;
 
 public abstract class CommandHandler implements Runnable {
@@ -63,6 +57,8 @@ public abstract class CommandHandler implements Runnable {
         registerCommand("syncBinaries", new SyncBinariesCommand(server));
         registerCommand("syncUpdates", new SyncUpdatesCommand(server));
         registerCommand("syncProfiles", new SyncProfilesCommand(server));
+        // Custom
+        registerCommand("syncAll", new SyncAllCommand(server));
 
         // Register auth commands
         registerCommand("auth", new AuthCommand(server));
