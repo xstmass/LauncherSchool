@@ -52,6 +52,7 @@ import launcher.serialize.config.entry.IntegerConfigEntry;
 import launcher.serialize.config.entry.StringConfigEntry;
 import launcher.serialize.signed.SignedObjectHolder;
 import launchserver.auth.AuthException;
+import launchserver.auth.AuthLimiter;
 import launchserver.auth.MySQLSourceConfig;
 import launchserver.auth.handler.AuthHandler;
 import launchserver.auth.handler.CachedAuthHandler;
@@ -81,6 +82,8 @@ public final class LaunchServer implements Runnable, AutoCloseable {
     @LauncherAPI public final Path privateKeyFile;
     @LauncherAPI public final Path updatesDir;
     @LauncherAPI public final Path profilesDir;
+
+    @LauncherAPI public final AuthLimiter limiter;
 
     // Server config
     @LauncherAPI public final Config config;
@@ -164,6 +167,9 @@ public final class LaunchServer implements Runnable, AutoCloseable {
             config = new Config(TextConfigReader.read(reader, true));
         }
         config.verify();
+
+        // anti-brutforce
+        limiter = new AuthLimiter(this);
 
         // Set launcher EXE binary
         launcherBinary = new JARLauncherBinary(this);
@@ -456,6 +462,11 @@ public final class LaunchServer implements Runnable, AutoCloseable {
         @LauncherAPI public final AuthProvider authProvider;
         @LauncherAPI public final TextureProvider textureProvider;
 
+        // AuthLimiter
+        @LauncherAPI public final int authRateLimit;
+        @LauncherAPI public final int authRateLimitMilis;
+        @LauncherAPI public final String authRejectString;
+
         // Misc options
         @LauncherAPI public final boolean launch4J;
         @LauncherAPI public final boolean compress;
@@ -469,6 +480,14 @@ public final class LaunchServer implements Runnable, AutoCloseable {
                 VerifyHelper.range(0, 65535), "Illegal LaunchServer port");
             bindAddress = block.hasEntry("bindAddress") ?
                 block.getEntryValue("bindAddress", StringConfigEntry.class) : getAddress();
+
+            // Limit Autorization
+            authRateLimit = VerifyHelper.verifyInt(block.getEntryValue("authRateLimit", IntegerConfigEntry.class),
+                    VerifyHelper.range(0, 1000000), "Illegal authRateLimit");
+            authRateLimitMilis = VerifyHelper.verifyInt(block.getEntryValue("authRateLimitMilis", IntegerConfigEntry.class),
+                    VerifyHelper.range(10, 10000000), "Illegal authRateLimitMillis");
+            authRejectString = block.hasEntry("authRejectString") ?
+                    block.getEntryValue("authRejectString", StringConfigEntry.class) : "Вы превысили лимит авторизаций. Подождите некоторое время перед повторной попыткой";
 
             // Set handlers & providers
             authHandler = AuthHandler.newHandler(block.getEntryValue("authHandler", StringConfigEntry.class),

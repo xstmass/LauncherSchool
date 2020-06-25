@@ -18,16 +18,19 @@ import launchserver.auth.provider.AuthProviderResult;
 import launchserver.response.Response;
 import launchserver.response.profile.ProfileByUUIDResponse;
 
-public final class AuthResponse extends Response {
+public final class AuthResponse extends Response
+{
     private final String ip;
 
-    public AuthResponse(LaunchServer server, long id, HInput input, HOutput output, String ip) {
+    public AuthResponse(LaunchServer server, long id, HInput input, HOutput output, String ip)
+    {
         super(server, id, input, output);
         this.ip = ip;
     }
 
     @Override
-    public void reply() throws Throwable {
+    public void reply() throws Throwable
+    {
         String login = input.readString(255);
         byte[] encryptedPassword = input.readByteArray(SecurityHelper.CRYPTO_MAX_LENGTH);
 
@@ -45,6 +48,10 @@ public final class AuthResponse extends Response {
         debug("Login: '%s', Password: '%s'", login, echo(password.length()));
         AuthProviderResult result;
         try {
+            if (server.limiter.isLimit(ip)) {
+                AuthProvider.authError(server.config.authRejectString);
+                return;
+            }
             result = server.config.authProvider.auth(login, password, ip);
             if (!VerifyHelper.isValidUsername(result.username)) {
                 AuthProvider.authError(String.format("Illegal result: '%s'", result.username));
