@@ -8,7 +8,8 @@ import launcher.helper.IOHelper;
 import launcher.serialize.signed.SignedBytesHolder;
 import launchserver.LaunchServer;
 
-public abstract class LauncherBinary {
+public abstract class LauncherBinary
+{
     @LauncherAPI protected final LaunchServer server;
     @LauncherAPI protected final Path binaryFile;
     private volatile SignedBytesHolder binary;
@@ -23,17 +24,20 @@ public abstract class LauncherBinary {
     public abstract void build() throws IOException;
 
     @LauncherAPI
-    public final boolean exists() {
+    public final boolean exists()
+    {
         return IOHelper.isFile(binaryFile);
     }
 
     @LauncherAPI
-    public final SignedBytesHolder getBytes() {
+    public final SignedBytesHolder getBytes()
+    {
         return binary;
     }
 
     @LauncherAPI
-    public final boolean sync() throws IOException {
+    public final boolean sync() throws IOException
+    {
         boolean exists = exists();
         binary = exists ? new SignedBytesHolder(IOHelper.read(binaryFile), server.privateKey) : null;
         return exists;

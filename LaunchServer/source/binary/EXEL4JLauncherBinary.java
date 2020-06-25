@@ -26,7 +26,7 @@ public final class EXEL4JLauncherBinary extends LauncherBinary {
 
     @LauncherAPI
     public EXEL4JLauncherBinary(LaunchServer server) {
-        super(server, server.dir.resolve(EXELauncherBinary.EXE_BINARY_FILE));
+        super(server, server.dir.resolve(server.config.binaryName + ".exe"));
         faviconFile = server.dir.resolve("favicon.ico");
         setConfig();
     }

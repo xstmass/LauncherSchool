@@ -467,6 +467,9 @@ public final class LaunchServer implements Runnable, AutoCloseable {
         @LauncherAPI public final int authRateLimitMilis;
         @LauncherAPI public final String authRejectString;
 
+        // BinaryName
+        @LauncherAPI public final String binaryName;
+
         // Misc options
         @LauncherAPI public final boolean launch4J;
         @LauncherAPI public final boolean compress;
@@ -499,6 +502,7 @@ public final class LaunchServer implements Runnable, AutoCloseable {
 
             // Set misc config
             launch4J = block.getEntryValue("launch4J", BooleanConfigEntry.class);
+            binaryName = block.getEntryValue("binaryName", StringConfigEntry.class);
             compress = block.getEntryValue("compress", BooleanConfigEntry.class);
         }
 
