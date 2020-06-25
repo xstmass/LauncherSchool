@@ -20,7 +20,7 @@ import launchserver.command.Command;
 import launchserver.command.CommandException;
 
 public final class DownloadClientCommand extends Command {
-    private static final String CLIENT_URL_MASK = "https://launcher-sashok724.keeperjerry.ru/download/clients/%s.zip";
+    private static String CLIENT_URL_MASK;
 
     public DownloadClientCommand(LaunchServer server) {
         super(server);
@@ -49,6 +49,7 @@ public final class DownloadClientCommand extends Command {
 
         // Download required client
         LogHelper.subInfo("Downloading client, it may take some time");
+        CLIENT_URL_MASK = server.config.mirror + "clients/%s.zip";
         DownloadAssetCommand.unpack(new URL(String.format(CLIENT_URL_MASK,
             IOHelper.urlEncode(version.name))), clientDir);
 

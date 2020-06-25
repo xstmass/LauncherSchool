@@ -467,6 +467,9 @@ public final class LaunchServer implements Runnable, AutoCloseable {
         @LauncherAPI public final int authRateLimitMilis;
         @LauncherAPI public final String authRejectString;
 
+        // Mirror
+        @LauncherAPI public final String mirror;
+
         // BinaryName
         @LauncherAPI public final String binaryName;
 
@@ -499,6 +502,9 @@ public final class LaunchServer implements Runnable, AutoCloseable {
                 block.getEntry("authProviderConfig", BlockConfigEntry.class));
             textureProvider = TextureProvider.newProvider(block.getEntryValue("textureProvider", StringConfigEntry.class),
                 block.getEntry("textureProviderConfig", BlockConfigEntry.class));
+
+            // Mirror
+            mirror = block.getEntryValue("mirror", StringConfigEntry.class);
 
             // Set misc config
             launch4J = block.getEntryValue("launch4J", BooleanConfigEntry.class);

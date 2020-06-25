@@ -15,7 +15,7 @@ import launchserver.LaunchServer;
 import launchserver.command.Command;
 
 public final class DownloadAssetCommand extends Command {
-    private static final String ASSET_URL_MASK = "https://launcher-sashok724.keeperjerry.ru/download/assets/%s.zip";
+    private static String ASSET_URL_MASK;
 
     public DownloadAssetCommand(LaunchServer server) {
         super(server);
@@ -43,6 +43,7 @@ public final class DownloadAssetCommand extends Command {
         Files.createDirectory(assetDir);
 
         // Download required asset
+        ASSET_URL_MASK = server.config.mirror + "assets/%s.zip";
         LogHelper.subInfo("Downloading asset, it may take some time");
         unpack(new URL(String.format(ASSET_URL_MASK, IOHelper.urlEncode(version.name))), assetDir);
 

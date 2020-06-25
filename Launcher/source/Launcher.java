@@ -77,7 +77,7 @@ public final class Launcher {
     private static final AtomicReference<Config> CONFIG = new AtomicReference<>();
 
     // Version info
-    @LauncherAPI public static final String VERSION = "1.4.1";
+    @LauncherAPI public static final String VERSION = "1.4.2";
     @LauncherAPI public static final String BUILD = readBuildNumber();
     @LauncherAPI public static final int PROTOCOL_MAGIC = 0x724724_00 + 23;
 
