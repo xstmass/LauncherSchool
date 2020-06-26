@@ -228,7 +228,7 @@ public final class UpdateRequest extends Request<SignedObjectHolder<HashedDir>>
 
         // Start file update
         MessageDigest digest = this.digest ? SecurityHelper.newDigest(DigestAlgorithm.MD5) : null;
-        try (OutputStream fileOutput = IOHelper.newOutput(file))
+        try (OutputStream fileOutput = IOHelper.newBufferedOutStream(IOHelper.newOutput(file)))
         {
             long downloaded = 0L;
 
@@ -255,6 +255,7 @@ public final class UpdateRequest extends Request<SignedObjectHolder<HashedDir>>
                 totalDownloaded += length;
                 updateState(filePath, downloaded, hFile.size);
             }
+            fileOutput.flush();
         }
 
         // Verify digest

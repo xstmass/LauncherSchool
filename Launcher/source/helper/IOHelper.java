@@ -745,6 +745,18 @@ public final class IOHelper
         Files.write(file, bytes, WRITE_OPTIONS);
     }
 
+    @LauncherAPI
+    public static OutputStream newBufferedOutStream(OutputStream out)
+    {
+        return new BufferedOutputStream(out);
+    }
+
+    @LauncherAPI
+    public static InputStream newBufferedInputStream(InputStream in)
+    {
+        return new BufferedInputStream(in);
+    }
+
     private static final class DeleteDirVisitor extends SimpleFileVisitor<Path>
     {
         private final Path dir;

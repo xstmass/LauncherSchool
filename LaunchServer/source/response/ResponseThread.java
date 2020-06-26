@@ -52,8 +52,8 @@ public final class ResponseThread implements Runnable
         // Process connection
         boolean cancelled = false;
         Throwable savedError = null;
-        try (HInput input = new HInput(socket.getInputStream());
-             HOutput output = new HOutput(socket.getOutputStream()))
+        try (HInput input = new HInput(IOHelper.newBufferedInputStream(socket.getInputStream()));
+             HOutput output = new HOutput(IOHelper.newBufferedOutStream(socket.getOutputStream())))
         {
             Type type = readHandshake(input, output);
             if (type == null)
