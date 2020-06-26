@@ -1,9 +1,5 @@
 package launchserver.texture;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.UUID;
-
 import launcher.client.ClientLauncher;
 import launcher.client.PlayerProfile.Texture;
 import launcher.helper.CommonHelper;
@@ -12,14 +8,20 @@ import launcher.helper.LogHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launcher.serialize.config.entry.StringConfigEntry;
 
-public final class RequestTextureProvider extends TextureProvider {
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.UUID;
+
+public final class RequestTextureProvider extends TextureProvider
+{
     private static final UUID ZERO_UUID = new UUID(0, 0);
 
     // Instance
     private final String skinURL;
     private final String cloakURL;
 
-    public RequestTextureProvider(BlockConfigEntry block) {
+    public RequestTextureProvider(BlockConfigEntry block)
+    {
         super(block);
         skinURL = block.getEntryValue("skinsURL", StringConfigEntry.class);
         cloakURL = block.getEntryValue("cloaksURL", StringConfigEntry.class);
@@ -29,33 +31,41 @@ public final class RequestTextureProvider extends TextureProvider {
         IOHelper.verifyURL(getTextureURL(cloakURL, ZERO_UUID, "cloakUsername"));
     }
 
-    @Override
-    public void close() {
-        // Do nothing
-    }
-
-    @Override
-    public Texture getCloakTexture(UUID uuid, String username) throws IOException {
-        return getTexture(getTextureURL(cloakURL, uuid, username), true);
-    }
-
-    @Override
-    public Texture getSkinTexture(UUID uuid, String username) throws IOException {
-        return getTexture(getTextureURL(skinURL, uuid, username), false);
-    }
-
-    private static Texture getTexture(String url, boolean cloak) throws IOException {
+    private static Texture getTexture(String url, boolean cloak) throws IOException
+    {
         LogHelper.debug("Getting texture: '%s'", url);
-        try {
+        try
+        {
             return new Texture(url, cloak);
-        } catch (FileNotFoundException ignored) {
+        }
+        catch (FileNotFoundException ignored)
+        {
             LogHelper.subDebug("Texture not found :(");
             return null; // Simply not found
         }
     }
 
-    private static String getTextureURL(String url, UUID uuid, String username) {
+    private static String getTextureURL(String url, UUID uuid, String username)
+    {
         return CommonHelper.replace(url, "username", IOHelper.urlEncode(username),
-            "uuid", IOHelper.urlEncode(uuid.toString()), "hash", IOHelper.urlEncode(ClientLauncher.toHash(uuid)));
+                "uuid", IOHelper.urlEncode(uuid.toString()), "hash", IOHelper.urlEncode(ClientLauncher.toHash(uuid)));
+    }
+
+    @Override
+    public void close()
+    {
+        // Do nothing
+    }
+
+    @Override
+    public Texture getCloakTexture(UUID uuid, String username) throws IOException
+    {
+        return getTexture(getTextureURL(cloakURL, uuid, username), true);
+    }
+
+    @Override
+    public Texture getSkinTexture(UUID uuid, String username) throws IOException
+    {
+        return getTexture(getTextureURL(skinURL, uuid, username), false);
     }
 }

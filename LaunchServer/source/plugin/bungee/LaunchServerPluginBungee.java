@@ -4,26 +4,33 @@ import launcher.helper.CommonHelper;
 import launchserver.plugin.LaunchServerPluginBridge;
 import net.md_5.bungee.api.plugin.Plugin;
 
-public final class LaunchServerPluginBungee extends Plugin {
+public final class LaunchServerPluginBungee extends Plugin
+{
     public volatile LaunchServerPluginBridge bridge = null;
 
     @Override
-    public void onDisable() {
+    public void onDisable()
+    {
         super.onDisable();
-        if (bridge != null) {
+        if (bridge != null)
+        {
             bridge.close();
             bridge = null;
         }
     }
 
     @Override
-    public void onEnable() {
+    public void onEnable()
+    {
         super.onEnable();
 
         // Initialize LaunchServer
-        try {
+        try
+        {
             bridge = new LaunchServerPluginBridge(getDataFolder().toPath());
-        } catch (Throwable exc) {
+        }
+        catch (Throwable exc)
+        {
             exc.printStackTrace();
         }
 

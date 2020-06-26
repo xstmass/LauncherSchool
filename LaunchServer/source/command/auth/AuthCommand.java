@@ -1,29 +1,34 @@
 package launchserver.command.auth;
 
-import java.util.UUID;
-
 import launcher.helper.LogHelper;
 import launchserver.LaunchServer;
 import launchserver.auth.provider.AuthProviderResult;
 import launchserver.command.Command;
 
-public final class AuthCommand extends Command {
-    public AuthCommand(LaunchServer server) {
+import java.util.UUID;
+
+public final class AuthCommand extends Command
+{
+    public AuthCommand(LaunchServer server)
+    {
         super(server);
     }
 
     @Override
-    public String getArgsDescription() {
+    public String getArgsDescription()
+    {
         return "<login> <password>";
     }
 
     @Override
-    public String getUsageDescription() {
+    public String getUsageDescription()
+    {
         return "Try to auth with specified login and password";
     }
 
     @Override
-    public void invoke(String... args) throws Throwable {
+    public void invoke(String... args) throws Throwable
+    {
         verifyArgs(args, 2);
         String login = args[0];
         String password = args[1];

@@ -1,5 +1,13 @@
 package launchserver.auth.provider;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.WriterConfig;
+import launcher.helper.IOHelper;
+import launcher.helper.LogHelper;
+import launcher.serialize.config.entry.BlockConfigEntry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,35 +19,76 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.WriterConfig;
-import launcher.helper.IOHelper;
-import launcher.helper.LogHelper;
-import launcher.serialize.config.entry.BlockConfigEntry;
-
-public final class MojangAuthProvider extends AuthProvider {
+public final class MojangAuthProvider extends AuthProvider
+{
     private static final Pattern UUID_REGEX = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
     private static final URL URL;
 
-    public MojangAuthProvider(BlockConfigEntry block) {
+    static
+    {
+        try
+        {
+            URL = new URL("https://authserver.mojang.com/authenticate");
+        }
+        catch (MalformedURLException e)
+        {
+            throw new InternalError(e);
+        }
+    }
+
+    MojangAuthProvider(BlockConfigEntry block)
+    {
         super(block);
     }
 
+    public static JsonObject makeMojangRequest(URL url, JsonObject request) throws IOException
+    {
+        HttpURLConnection connection = request == null ?
+                (HttpURLConnection) IOHelper.newConnection(url) :
+                IOHelper.newConnectionPost(url);
+
+        // Make request
+        if (request != null)
+        {
+            connection.setRequestProperty("Content-Type", "application/json");
+            try (OutputStream output = connection.getOutputStream())
+            {
+                output.write(request.toString(WriterConfig.MINIMAL).getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        connection.getResponseCode(); // Actually make request
+
+        // Read response
+        InputStream errorInput = connection.getErrorStream();
+        try (InputStream input = errorInput == null ? connection.getInputStream() : errorInput)
+        {
+            String charset = connection.getContentEncoding();
+            Charset charsetObject = charset == null ?
+                    IOHelper.UNICODE_CHARSET : Charset.forName(charset);
+
+            // Parse response
+            String json = new String(IOHelper.read(input), charsetObject);
+            LogHelper.subDebug("Raw Mojang response: '" + json + '\'');
+            return json.isEmpty() ? null : Json.parse(json).asObject();
+        }
+    }
+
     @Override
-    public AuthProviderResult auth(String login, String password, String ip) throws Throwable {
+    public AuthProviderResult auth(String login, String password, String ip) throws Throwable
+    {
         JsonObject request = Json.object().
-            add("agent", Json.object().add("name", "Minecraft").add("version", 1)).
-            add("username", login).add("password", password);
+                add("agent", Json.object().add("name", "Minecraft").add("version", 1)).
+                add("username", login).add("password", password);
 
         // Verify there's no error
         JsonObject response = makeMojangRequest(URL, request);
-        if (response == null) {
+        if (response == null)
+        {
             authError("Empty mojang response");
         }
         JsonValue errorMessage = response.get("errorMessage");
-        if (errorMessage != null) {
+        if (errorMessage != null)
+        {
             authError(errorMessage.asString());
         }
 
@@ -55,43 +104,8 @@ public final class MojangAuthProvider extends AuthProvider {
     }
 
     @Override
-    public void close() {
+    public void close()
+    {
         // Do nothing
-    }
-
-    public static JsonObject makeMojangRequest(URL url, JsonObject request) throws IOException {
-        HttpURLConnection connection = request == null ?
-            (HttpURLConnection) IOHelper.newConnection(url) :
-            IOHelper.newConnectionPost(url);
-
-        // Make request
-        if (request != null) {
-            connection.setRequestProperty("Content-Type", "application/json");
-            try (OutputStream output = connection.getOutputStream()) {
-                output.write(request.toString(WriterConfig.MINIMAL).getBytes(StandardCharsets.UTF_8));
-            }
-        }
-        connection.getResponseCode(); // Actually make request
-
-        // Read response
-        InputStream errorInput = connection.getErrorStream();
-        try (InputStream input = errorInput == null ? connection.getInputStream() : errorInput) {
-            String charset = connection.getContentEncoding();
-            Charset charsetObject = charset == null ?
-                IOHelper.UNICODE_CHARSET : Charset.forName(charset);
-
-            // Parse response
-            String json = new String(IOHelper.read(input), charsetObject);
-            LogHelper.subDebug("Raw Mojang response: '" + json + '\'');
-            return json.isEmpty() ? null : Json.parse(json).asObject();
-        }
-    }
-
-    static {
-        try {
-            URL = new URL("https://authserver.mojang.com/authenticate");
-        } catch (MalformedURLException e) {
-            throw new InternalError(e);
-        }
     }
 }

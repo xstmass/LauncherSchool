@@ -1,11 +1,11 @@
 package launchserver.binary;
 
-import java.io.IOException;
-import java.nio.file.Files;
-
 import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
 import launchserver.LaunchServer;
+
+import java.io.IOException;
+import java.nio.file.Files;
 
 public final class EXELauncherBinary extends LauncherBinary
 {
@@ -15,8 +15,10 @@ public final class EXELauncherBinary extends LauncherBinary
     }
 
     @Override
-    public void build() throws IOException {
-        if (IOHelper.isFile(binaryFile)) {
+    public void build() throws IOException
+    {
+        if (IOHelper.isFile(binaryFile))
+        {
             LogHelper.subWarning("Deleting obsolete launcher EXE binary file");
             Files.delete(binaryFile);
         }

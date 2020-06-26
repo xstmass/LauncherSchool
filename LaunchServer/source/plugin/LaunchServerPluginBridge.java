@@ -1,23 +1,34 @@
 package launchserver.plugin;
 
-import java.nio.file.Path;
-
 import launcher.helper.JVMHelper;
 import launcher.helper.LogHelper;
 import launchserver.LaunchServer;
 
-public final class LaunchServerPluginBridge implements Runnable, AutoCloseable {
+import java.nio.file.Path;
+
+public final class LaunchServerPluginBridge implements Runnable, AutoCloseable
+{
+    static
+    {
+        //SecurityHelper.verifyCertificates(LaunchServer.class);
+        JVMHelper.verifySystemProperties(LaunchServer.class, false);
+    }
+
     private final LaunchServer server;
 
-    public LaunchServerPluginBridge(Path dir) throws Throwable {
+    public LaunchServerPluginBridge(Path dir) throws Throwable
+    {
         LogHelper.addOutput(dir.resolve("LaunchServer.log"));
         LogHelper.printVersion("LaunchServer");
 
         // Create new LaunchServer
         long start = System.currentTimeMillis();
-        try {
+        try
+        {
             server = new LaunchServer(dir, true);
-        } catch (Throwable exc) {
+        }
+        catch (Throwable exc)
+        {
             LogHelper.error(exc);
             throw exc;
         }
@@ -26,21 +37,19 @@ public final class LaunchServerPluginBridge implements Runnable, AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public void close()
+    {
         server.close();
     }
 
     @Override
-    public void run() {
+    public void run()
+    {
         server.run();
     }
 
-    public void eval(String... command) {
+    public void eval(String... command)
+    {
         server.commandHandler.eval(command, false);
-    }
-
-    static {
-        //SecurityHelper.verifyCertificates(LaunchServer.class);
-        JVMHelper.verifySystemProperties(LaunchServer.class, false);
     }
 }

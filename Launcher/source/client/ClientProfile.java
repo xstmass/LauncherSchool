@@ -1,29 +1,27 @@
 package launcher.client;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
-
 import launcher.LauncherAPI;
 import launcher.hasher.FileNameMatcher;
 import launcher.helper.IOHelper;
 import launcher.helper.VerifyHelper;
 import launcher.serialize.HInput;
 import launcher.serialize.config.ConfigObject;
-import launcher.serialize.config.entry.BlockConfigEntry;
-import launcher.serialize.config.entry.BooleanConfigEntry;
+import launcher.serialize.config.entry.*;
 import launcher.serialize.config.entry.ConfigEntry.Type;
-import launcher.serialize.config.entry.IntegerConfigEntry;
-import launcher.serialize.config.entry.ListConfigEntry;
-import launcher.serialize.config.entry.StringConfigEntry;
 import launcher.serialize.stream.StreamObject;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("ComparableImplementedButEqualsNotOverridden")
-public final class ClientProfile extends ConfigObject implements Comparable<ClientProfile> {
-    @LauncherAPI public static final StreamObject.Adapter<ClientProfile> RO_ADAPTER = input -> new ClientProfile(input, true);
+public final class ClientProfile extends ConfigObject implements Comparable<ClientProfile>
+{
+    @LauncherAPI
+    public static final StreamObject.Adapter<ClientProfile> RO_ADAPTER = input -> new ClientProfile(input, true);
     private static final FileNameMatcher ASSET_MATCHER = new FileNameMatcher(
-        new String[0], new String[] { "indexes", "objects" }, new String[0]);
+            new String[0], new String[]{"indexes", "objects"}, new String[0]);
 
     // Version
     private final StringConfigEntry version;
@@ -48,7 +46,8 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     private final ListConfigEntry clientArgs;
 
     @LauncherAPI
-    public ClientProfile(BlockConfigEntry block) {
+    public ClientProfile(BlockConfigEntry block)
+    {
         super(block);
 
         // Version
@@ -75,42 +74,50 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     }
 
     @LauncherAPI
-    public ClientProfile(HInput input, boolean ro) throws IOException {
+    public ClientProfile(HInput input, boolean ro) throws IOException
+    {
         this(new BlockConfigEntry(input, ro));
     }
 
     @Override
-    public int compareTo(ClientProfile o) {
+    public int compareTo(ClientProfile o)
+    {
         return Integer.compare(getSortIndex(), o.getSortIndex());
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return title.getValue();
     }
 
     @LauncherAPI
-    public String getAssetIndex() {
+    public String getAssetIndex()
+    {
         return assetIndex.getValue();
     }
 
     @LauncherAPI
-    public FileNameMatcher getAssetUpdateMatcher() {
+    public FileNameMatcher getAssetUpdateMatcher()
+    {
         return getVersion().compareTo(Version.MC1710) >= 0 ? ASSET_MATCHER : null;
     }
 
     @LauncherAPI
-    public String[] getClassPath() {
+    public String[] getClassPath()
+    {
         return classPath.stream(StringConfigEntry.class).toArray(String[]::new);
     }
 
     @LauncherAPI
-    public String[] getClientArgs() {
+    public String[] getClientArgs()
+    {
         return clientArgs.stream(StringConfigEntry.class).toArray(String[]::new);
     }
 
     @LauncherAPI
-    public FileNameMatcher getClientUpdateMatcher() {
+    public FileNameMatcher getClientUpdateMatcher()
+    {
         String[] updateArray = update.stream(StringConfigEntry.class).toArray(String[]::new);
         String[] verifyArray = updateVerify.stream(StringConfigEntry.class).toArray(String[]::new);
         String[] exclusionsArray = updateExclusions.stream(StringConfigEntry.class).toArray(String[]::new);
@@ -118,62 +125,74 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     }
 
     @LauncherAPI
-    public String[] getJvmArgs() {
+    public String[] getJvmArgs()
+    {
         return jvmArgs.stream(StringConfigEntry.class).toArray(String[]::new);
     }
 
     @LauncherAPI
-    public String getMainClass() {
+    public String getMainClass()
+    {
         return mainClass.getValue();
     }
 
     @LauncherAPI
-    public String getServerAddress() {
+    public String getServerAddress()
+    {
         return serverAddress.getValue();
     }
 
     @LauncherAPI
-    public int getServerPort() {
+    public int getServerPort()
+    {
         return serverPort.getValue();
     }
 
     @LauncherAPI
-    public InetSocketAddress getServerSocketAddress() {
+    public InetSocketAddress getServerSocketAddress()
+    {
         return InetSocketAddress.createUnresolved(getServerAddress(), getServerPort());
     }
 
     @LauncherAPI
-    public int getSortIndex() {
+    public int getSortIndex()
+    {
         return sortIndex.getValue();
     }
 
     @LauncherAPI
-    public String getTitle() {
+    public String getTitle()
+    {
         return title.getValue();
     }
 
     @LauncherAPI
-    public void setTitle(String title) {
+    public void setTitle(String title)
+    {
         this.title.setValue(title);
     }
 
     @LauncherAPI
-    public Version getVersion() {
+    public Version getVersion()
+    {
         return Version.byName(version.getValue());
     }
 
     @LauncherAPI
-    public void setVersion(Version version) {
+    public void setVersion(Version version)
+    {
         this.version.setValue(version.name);
     }
 
     @LauncherAPI
-    public boolean isUpdateFastCheck() {
+    public boolean isUpdateFastCheck()
+    {
         return updateFastCheck.getValue();
     }
 
     @LauncherAPI
-    public void verify() {
+    public void verify()
+    {
         // Version
         getVersion();
         IOHelper.verifyFileName(getAssetIndex());
@@ -196,7 +215,8 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     }
 
     @LauncherAPI
-    public enum Version {
+    public enum Version
+    {
         MC147("1.4.7", 51),
         MC152("1.5.2", 61),
         MC164("1.6.4", 78),
@@ -213,29 +233,35 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
         MC1160("1.16", 735),
         MC1161("1.16.1", 736); // Столько шума...
         private static final Map<String, Version> VERSIONS;
+
+        static
+        {
+            Version[] versionsValues = values();
+            VERSIONS = new HashMap<>(versionsValues.length);
+            for (Version version : versionsValues)
+            {
+                VERSIONS.put(version.name, version);
+            }
+        }
+
         public final String name;
         public final int protocol;
 
-        Version(String name, int protocol) {
+        Version(String name, int protocol)
+        {
             this.name = name;
             this.protocol = protocol;
         }
 
-        @Override
-        public String toString() {
-            return "Minecraft " + name;
-        }
-
-        public static Version byName(String name) {
+        public static Version byName(String name)
+        {
             return VerifyHelper.getMapValue(VERSIONS, name, String.format("Unknown client version: '%s'", name));
         }
 
-        static {
-            Version[] versionsValues = values();
-            VERSIONS = new HashMap<>(versionsValues.length);
-            for (Version version : versionsValues) {
-                VERSIONS.put(version.name, version);
-            }
+        @Override
+        public String toString()
+        {
+            return "Minecraft " + name;
         }
     }
 }

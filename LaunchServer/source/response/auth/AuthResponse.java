@@ -1,10 +1,5 @@
 package launchserver.response.auth;
 
-import java.util.Arrays;
-import java.util.UUID;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-
 import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
 import launcher.helper.SecurityHelper;
@@ -18,6 +13,11 @@ import launchserver.auth.provider.AuthProviderResult;
 import launchserver.response.Response;
 import launchserver.response.profile.ProfileByUUIDResponse;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.util.Arrays;
+import java.util.UUID;
+
 public final class AuthResponse extends Response
 {
     private final String ip;
@@ -28,6 +28,13 @@ public final class AuthResponse extends Response
         this.ip = ip;
     }
 
+    private static String echo(int length)
+    {
+        char[] chars = new char[length];
+        Arrays.fill(chars, '*');
+        return new String(chars);
+    }
+
     @Override
     public void reply() throws Throwable
     {
@@ -36,10 +43,13 @@ public final class AuthResponse extends Response
 
         // Decrypt password
         String password;
-        try {
+        try
+        {
             password = IOHelper.decode(SecurityHelper.newRSADecryptCipher(server.privateKey).
-                doFinal(encryptedPassword));
-        } catch (IllegalBlockSizeException | BadPaddingException ignored) {
+                    doFinal(encryptedPassword));
+        }
+        catch (IllegalBlockSizeException | BadPaddingException ignored)
+        {
             requestError("Password decryption error");
             return;
         }
@@ -47,20 +57,27 @@ public final class AuthResponse extends Response
         // Authenticate
         debug("Login: '%s', Password: '%s'", login, echo(password.length()));
         AuthProviderResult result;
-        try {
-            if (server.limiter.isLimit(ip)) {
+        try
+        {
+            if (server.limiter.isLimit(ip))
+            {
                 AuthProvider.authError(server.config.authRejectString);
                 return;
             }
             result = server.config.authProvider.auth(login, password, ip);
-            if (!VerifyHelper.isValidUsername(result.username)) {
+            if (!VerifyHelper.isValidUsername(result.username))
+            {
                 AuthProvider.authError(String.format("Illegal result: '%s'", result.username));
                 return;
             }
-        } catch (AuthException e) {
+        }
+        catch (AuthException e)
+        {
             requestError(e.getMessage());
             return;
-        } catch (Throwable exc) {
+        }
+        catch (Throwable exc)
+        {
             LogHelper.error(exc);
             requestError("Internal auth provider error");
             return;
@@ -69,12 +86,17 @@ public final class AuthResponse extends Response
 
         // Authenticate on server (and get UUID)
         UUID uuid;
-        try {
+        try
+        {
             uuid = server.config.authHandler.auth(result);
-        } catch (AuthException e) {
+        }
+        catch (AuthException e)
+        {
             requestError(e.getMessage());
             return;
-        } catch (Throwable exc) {
+        }
+        catch (Throwable exc)
+        {
             LogHelper.error(exc);
             requestError("Internal auth handler error");
             return;
@@ -84,11 +106,5 @@ public final class AuthResponse extends Response
         // Write profile and UUID
         ProfileByUUIDResponse.getProfile(server, uuid, result.username).write(output);
         output.writeASCII(result.accessToken, -SecurityHelper.TOKEN_STRING_LENGTH);
-    }
-
-    private static String echo(int length) {
-        char[] chars = new char[length];
-        Arrays.fill(chars, '*');
-        return new String(chars);
     }
 }

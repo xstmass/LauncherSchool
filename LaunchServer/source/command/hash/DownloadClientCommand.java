@@ -1,13 +1,5 @@
 package launchserver.command.hash;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-
 import launcher.client.ClientProfile;
 import launcher.client.ClientProfile.Version;
 import launcher.helper.IOHelper;
@@ -17,27 +9,38 @@ import launcher.serialize.config.TextConfigWriter;
 import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.LaunchServer;
 import launchserver.command.Command;
-import launchserver.command.CommandException;
 
-public final class DownloadClientCommand extends Command {
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+
+public final class DownloadClientCommand extends Command
+{
     private static String CLIENT_URL_MASK;
 
-    public DownloadClientCommand(LaunchServer server) {
+    public DownloadClientCommand(LaunchServer server)
+    {
         super(server);
     }
 
     @Override
-    public String getArgsDescription() {
+    public String getArgsDescription()
+    {
         return "<version> <dir>";
     }
 
     @Override
-    public String getUsageDescription() {
+    public String getUsageDescription()
+    {
         return "Download client dir";
     }
 
     @Override
-    public void invoke(String... args) throws Throwable {
+    public void invoke(String... args) throws Throwable
+    {
         verifyArgs(args, 2);
         Version version = Version.byName(args[0]);
         String dirName = IOHelper.verifyFileName(args[1]);
@@ -51,19 +54,21 @@ public final class DownloadClientCommand extends Command {
         LogHelper.subInfo("Downloading client, it may take some time");
         CLIENT_URL_MASK = server.config.mirror + "clients/%s.zip";
         DownloadAssetCommand.unpack(new URL(String.format(CLIENT_URL_MASK,
-            IOHelper.urlEncode(version.name))), clientDir);
+                IOHelper.urlEncode(version.name))), clientDir);
 
         // Create profile file
         LogHelper.subInfo("Creaing profile file: '%s'", dirName);
         ClientProfile client;
         String profilePath = String.format("launchserver/defaults/profile%s.cfg", version.name);
-        try (BufferedReader reader = IOHelper.newReader(IOHelper.getResourceURL(profilePath))) {
+        try (BufferedReader reader = IOHelper.newReader(IOHelper.getResourceURL(profilePath)))
+        {
             client = new ClientProfile(TextConfigReader.read(reader, false));
         }
         client.setTitle(dirName);
         client.block.getEntry("dir", StringConfigEntry.class).setValue(dirName);
         try (BufferedWriter writer = IOHelper.newWriter(IOHelper.resolveIncremental(server.profilesDir,
-            dirName, "cfg"))) {
+                dirName, "cfg")))
+        {
             TextConfigWriter.write(client.block, writer, true);
         }
 

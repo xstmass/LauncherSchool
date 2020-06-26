@@ -1,8 +1,5 @@
 package com.mojang.authlib.yggdrasil;
 
-import java.util.Arrays;
-import java.util.UUID;
-
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -12,35 +9,59 @@ import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launcher.request.uuid.BatchProfileByUsernameRequest;
 
-public class YggdrasilGameProfileRepository implements GameProfileRepository {
-    private static final long BUSY_WAIT_MS = VerifyHelper.verifyLong(
-        Long.parseLong(System.getProperty("launcher.authlib.busyWait", Long.toString(100L))),
-        VerifyHelper.L_NOT_NEGATIVE, "launcher.authlib.busyWait can't be < 0");
-    private static final long ERROR_BUSY_WAIT_MS = VerifyHelper.verifyLong(
-        Long.parseLong(System.getProperty("launcher.authlib.errorBusyWait", Long.toString(500L))),
-        VerifyHelper.L_NOT_NEGATIVE, "launcher.authlib.errorBusyWait can't be < 0");
+import java.util.Arrays;
+import java.util.UUID;
 
-    public YggdrasilGameProfileRepository() {
+public class YggdrasilGameProfileRepository implements GameProfileRepository
+{
+    private static final long BUSY_WAIT_MS = VerifyHelper.verifyLong(
+            Long.parseLong(System.getProperty("launcher.authlib.busyWait", Long.toString(100L))),
+            VerifyHelper.L_NOT_NEGATIVE, "launcher.authlib.busyWait can't be < 0");
+    private static final long ERROR_BUSY_WAIT_MS = VerifyHelper.verifyLong(
+            Long.parseLong(System.getProperty("launcher.authlib.errorBusyWait", Long.toString(500L))),
+            VerifyHelper.L_NOT_NEGATIVE, "launcher.authlib.errorBusyWait can't be < 0");
+
+    public YggdrasilGameProfileRepository()
+    {
         LogHelper.debug("Patched GameProfileRepository created");
     }
 
-    public YggdrasilGameProfileRepository(YggdrasilAuthenticationService authenticationService) {
+    public YggdrasilGameProfileRepository(YggdrasilAuthenticationService authenticationService)
+    {
         this();
     }
 
+    private static void busyWait(long ms)
+    {
+        try
+        {
+            Thread.sleep(ms);
+        }
+        catch (InterruptedException e)
+        {
+            LogHelper.error(e);
+        }
+    }
+
     @Override
-    public void findProfilesByNames(String[] usernames, Agent agent, ProfileLookupCallback callback) {
+    public void findProfilesByNames(String[] usernames, Agent agent, ProfileLookupCallback callback)
+    {
         int offset = 0;
-        while (offset < usernames.length) {
+        while (offset < usernames.length)
+        {
             String[] sliceUsernames = Arrays.copyOfRange(usernames, offset, Math.min(offset + BatchProfileByUsernameRequest.MAX_BATCH_SIZE, usernames.length));
             offset += BatchProfileByUsernameRequest.MAX_BATCH_SIZE;
 
             // Batch Username-To-UUID request
             PlayerProfile[] sliceProfiles;
-            try {
+            try
+            {
                 sliceProfiles = new BatchProfileByUsernameRequest(sliceUsernames).request();
-            } catch (Throwable exc) {
-                for (String username : sliceUsernames) {
+            }
+            catch (Throwable exc)
+            {
+                for (String username : sliceUsernames)
+                {
                     LogHelper.debug("Couldn't find profile '%s': %s", username, exc);
                     callback.onProfileLookupFailed(new GameProfile((UUID) null, username), exc instanceof Exception ? (Exception) exc : new Exception(exc));
                 }
@@ -51,9 +72,11 @@ public class YggdrasilGameProfileRepository implements GameProfileRepository {
             }
 
             // Request succeeded!
-            for (int i = 0; i < sliceProfiles.length; i++) {
+            for (int i = 0; i < sliceProfiles.length; i++)
+            {
                 PlayerProfile pp = sliceProfiles[i];
-                if (pp == null) {
+                if (pp == null)
+                {
                     String username = sliceUsernames[i];
                     LogHelper.debug("Couldn't find profile '%s'", username);
                     callback.onProfileLookupFailed(new GameProfile((UUID) null, username), new ProfileNotFoundException("Server did not find the requested profile"));
@@ -67,14 +90,6 @@ public class YggdrasilGameProfileRepository implements GameProfileRepository {
 
             // Busy wait, like in standard authlib
             busyWait(BUSY_WAIT_MS);
-        }
-    }
-
-    private static void busyWait(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            LogHelper.error(e);
         }
     }
 }

@@ -1,16 +1,18 @@
 package launchserver.command.handler;
 
-import java.io.IOException;
-
 import jline.console.ConsoleReader;
 import launcher.helper.LogHelper;
 import launcher.helper.LogHelper.Output;
 import launchserver.LaunchServer;
 
-public final class JLineCommandHandler extends CommandHandler {
+import java.io.IOException;
+
+public final class JLineCommandHandler extends CommandHandler
+{
     private final ConsoleReader reader;
 
-    public JLineCommandHandler(LaunchServer server) throws IOException {
+    public JLineCommandHandler(LaunchServer server) throws IOException
+    {
         super(server);
 
         // Set reader
@@ -23,28 +25,36 @@ public final class JLineCommandHandler extends CommandHandler {
     }
 
     @Override
-    public void bell() throws IOException {
+    public void bell() throws IOException
+    {
         reader.beep();
     }
 
     @Override
-    public void clear() throws IOException {
+    public void clear() throws IOException
+    {
         reader.clearScreen();
     }
 
     @Override
-    public String readLine() throws IOException {
+    public String readLine() throws IOException
+    {
         return reader.readLine();
     }
 
-    private final class JLineOutput implements Output {
+    private final class JLineOutput implements Output
+    {
         @Override
-        public void println(String message) {
-            try {
+        public void println(String message)
+        {
+            try
+            {
                 reader.println(ConsoleReader.RESET_LINE + message);
                 reader.drawLine();
                 reader.flush();
-            } catch (IOException ignored) {
+            }
+            catch (IOException ignored)
+            {
                 // Ignored
             }
         }

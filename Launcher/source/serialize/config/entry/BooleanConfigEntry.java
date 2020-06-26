@@ -1,29 +1,34 @@
 package launcher.serialize.config.entry;
 
-import java.io.IOException;
-
 import launcher.LauncherAPI;
 import launcher.serialize.HInput;
 import launcher.serialize.HOutput;
 
-public final class BooleanConfigEntry extends ConfigEntry<Boolean> {
+import java.io.IOException;
+
+public final class BooleanConfigEntry extends ConfigEntry<Boolean>
+{
     @LauncherAPI
-    public BooleanConfigEntry(boolean value, boolean ro, int cc) {
+    public BooleanConfigEntry(boolean value, boolean ro, int cc)
+    {
         super(value, ro, cc);
     }
 
     @LauncherAPI
-    public BooleanConfigEntry(HInput input, boolean ro) throws IOException {
+    public BooleanConfigEntry(HInput input, boolean ro) throws IOException
+    {
         this(input.readBoolean(), ro, 0);
     }
 
     @Override
-    public Type getType() {
+    public Type getType()
+    {
         return Type.BOOLEAN;
     }
 
     @Override
-    public void write(HOutput output) throws IOException {
+    public void write(HOutput output) throws IOException
+    {
         output.writeBoolean(getValue());
     }
 }

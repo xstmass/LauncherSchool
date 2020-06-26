@@ -1,10 +1,5 @@
 package launchserver.command.hash;
 
-import java.io.BufferedReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonObject.Member;
@@ -14,30 +9,41 @@ import launchserver.LaunchServer;
 import launchserver.command.Command;
 import launchserver.command.CommandException;
 
-public final class UnindexAssetCommand extends Command {
-    public UnindexAssetCommand(LaunchServer server) {
+import java.io.BufferedReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+
+public final class UnindexAssetCommand extends Command
+{
+    public UnindexAssetCommand(LaunchServer server)
+    {
         super(server);
     }
 
     @Override
-    public String getArgsDescription() {
+    public String getArgsDescription()
+    {
         return "<dir> <index> <output-dir>";
     }
 
     @Override
-    public String getUsageDescription() {
+    public String getUsageDescription()
+    {
         return "Unindex asset dir (1.7.10+)";
     }
 
     @Override
-    public void invoke(String... args) throws Throwable {
+    public void invoke(String... args) throws Throwable
+    {
         verifyArgs(args, 3);
         String inputAssetDirName = IOHelper.verifyFileName(args[0]);
         String indexFileName = IOHelper.verifyFileName(args[1]);
         String outputAssetDirName = IOHelper.verifyFileName(args[2]);
         Path inputAssetDir = server.updatesDir.resolve(inputAssetDirName);
         Path outputAssetDir = server.updatesDir.resolve(outputAssetDirName);
-        if (outputAssetDir.equals(inputAssetDir)) {
+        if (outputAssetDir.equals(inputAssetDir))
+        {
             throw new CommandException("Indexed and unindexed asset dirs can't be same");
         }
 
@@ -48,13 +54,15 @@ public final class UnindexAssetCommand extends Command {
         // Read JSON file
         JsonObject objects;
         LogHelper.subInfo("Reading asset index file: '%s'", indexFileName);
-        try (BufferedReader reader = IOHelper.newReader(IndexAssetCommand.resolveIndexFile(inputAssetDir, indexFileName))) {
+        try (BufferedReader reader = IOHelper.newReader(IndexAssetCommand.resolveIndexFile(inputAssetDir, indexFileName)))
+        {
             objects = Json.parse(reader).asObject().get(IndexAssetCommand.OBJECTS_DIR).asObject();
         }
 
         // Restore objects
         LogHelper.subInfo("Unindexing %d objects", objects.size());
-        for (Member member : objects) {
+        for (Member member : objects)
+        {
             String name = member.getName();
             LogHelper.subInfo("Unindexing: '%s'", name);
 

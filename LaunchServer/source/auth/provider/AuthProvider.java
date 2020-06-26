@@ -1,50 +1,22 @@
 package launchserver.auth.provider;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-
 import launcher.LauncherAPI;
 import launcher.helper.VerifyHelper;
 import launcher.serialize.config.ConfigObject;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launchserver.auth.AuthException;
 
-public abstract class AuthProvider extends ConfigObject implements AutoCloseable {
+import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
+public abstract class AuthProvider extends ConfigObject implements AutoCloseable
+{
     private static final Map<String, Adapter<AuthProvider>> AUTH_PROVIDERS = new ConcurrentHashMap<>(8);
 
-    @LauncherAPI
-    protected AuthProvider(BlockConfigEntry block) {
-        super(block);
-    }
-
-    @Override
-    public abstract void close() throws IOException;
-
-    @LauncherAPI
-    public abstract AuthProviderResult auth(String login, String password, String ip) throws Throwable;
-
-    @LauncherAPI
-    public static AuthProviderResult authError(String message) throws AuthException {
-        throw new AuthException(message);
-    }
-
-    @LauncherAPI
-    public static AuthProvider newProvider(String name, BlockConfigEntry block) {
-        VerifyHelper.verifyIDName(name);
-        Adapter<AuthProvider> authHandlerAdapter = VerifyHelper.getMapValue(AUTH_PROVIDERS, name,
-            String.format("Unknown auth provider: '%s'", name));
-        return authHandlerAdapter.convert(block);
-    }
-
-    @LauncherAPI
-    public static void registerProvider(String name, Adapter<AuthProvider> adapter) {
-        VerifyHelper.putIfAbsent(AUTH_PROVIDERS, name, Objects.requireNonNull(adapter, "adapter"),
-            String.format("Auth provider has been already registered: '%s'", name));
-    }
-
-    static {
+    static
+    {
         registerProvider("accept", AcceptAuthProvider::new);
         registerProvider("reject", RejectAuthProvider::new);
         registerProvider("delegate", DelegateAuthProvider::new);
@@ -56,4 +28,38 @@ public abstract class AuthProvider extends ConfigObject implements AutoCloseable
         registerProvider("mysql-bcrypt", MySQLBcryptAuthProvider::new);
         registerProvider("request", RequestAuthProvider::new);
     }
+
+    @LauncherAPI
+    protected AuthProvider(BlockConfigEntry block)
+    {
+        super(block);
+    }
+
+    @LauncherAPI
+    public static AuthProviderResult authError(String message) throws AuthException
+    {
+        throw new AuthException(message);
+    }
+
+    @LauncherAPI
+    public static AuthProvider newProvider(String name, BlockConfigEntry block)
+    {
+        VerifyHelper.verifyIDName(name);
+        Adapter<AuthProvider> authHandlerAdapter = VerifyHelper.getMapValue(AUTH_PROVIDERS, name,
+                String.format("Unknown auth provider: '%s'", name));
+        return authHandlerAdapter.convert(block);
+    }
+
+    @LauncherAPI
+    public static void registerProvider(String name, Adapter<AuthProvider> adapter)
+    {
+        VerifyHelper.putIfAbsent(AUTH_PROVIDERS, name, Objects.requireNonNull(adapter, "adapter"),
+                String.format("Auth provider has been already registered: '%s'", name));
+    }
+
+    @Override
+    public abstract void close() throws IOException;
+
+    @LauncherAPI
+    public abstract AuthProviderResult auth(String login, String password, String ip) throws Throwable;
 }

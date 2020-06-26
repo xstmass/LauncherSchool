@@ -1,8 +1,5 @@
 package launchserver.response.auth;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launcher.request.auth.JoinServerRequest;
@@ -13,25 +10,36 @@ import launchserver.auth.AuthException;
 import launchserver.response.Response;
 import launchserver.response.profile.ProfileByUUIDResponse;
 
-public final class CheckServerResponse extends Response {
-    public CheckServerResponse(LaunchServer server, long id, HInput input, HOutput output) {
+import java.io.IOException;
+import java.util.UUID;
+
+public final class CheckServerResponse extends Response
+{
+    public CheckServerResponse(LaunchServer server, long id, HInput input, HOutput output)
+    {
         super(server, id, input, output);
     }
 
     @Override
-    public void reply() throws IOException {
+    public void reply() throws IOException
+    {
         String username = VerifyHelper.verifyUsername(input.readString(64));
         String serverID = JoinServerRequest.verifyServerID(input.readASCII(41)); // With minus sign
         debug("Username: %s, Server ID: %s", username, serverID);
 
         // Try check server with auth handler
         UUID uuid;
-        try {
+        try
+        {
             uuid = server.config.authHandler.checkServer(username, serverID);
-        } catch (AuthException e) {
+        }
+        catch (AuthException e)
+        {
             requestError(e.getMessage());
             return;
-        } catch (Throwable exc) {
+        }
+        catch (Throwable exc)
+        {
             LogHelper.error(exc);
             requestError("Internal auth handler error");
             return;
@@ -40,7 +48,8 @@ public final class CheckServerResponse extends Response {
 
         // Write profile and UUID
         output.writeBoolean(uuid != null);
-        if (uuid != null) {
+        if (uuid != null)
+        {
             ProfileByUUIDResponse.getProfile(server, uuid, username).write(output);
         }
     }

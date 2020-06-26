@@ -1,10 +1,5 @@
 package launchserver.response;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.Socket;
-import java.net.SocketException;
-
 import launcher.Launcher;
 import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
@@ -25,12 +20,19 @@ import launchserver.response.update.LauncherResponse;
 import launchserver.response.update.UpdateListResponse;
 import launchserver.response.update.UpdateResponse;
 
-public final class ResponseThread implements Runnable {
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.Socket;
+import java.net.SocketException;
+
+public final class ResponseThread implements Runnable
+{
     private final LaunchServer server;
     private final long id;
     private final Socket socket;
 
-    public ResponseThread(LaunchServer server, long id, Socket socket) throws SocketException {
+    public ResponseThread(LaunchServer server, long id, Socket socket) throws SocketException
+    {
         this.server = server;
         this.id = id;
         this.socket = socket;
@@ -40,8 +42,10 @@ public final class ResponseThread implements Runnable {
     }
 
     @Override
-    public void run() {
-        if (!server.serverSocketHandler.logConnections) {
+    public void run()
+    {
+        if (!server.serverSocketHandler.logConnections)
+        {
             LogHelper.debug("Connection #%d from %s", id, IOHelper.getIP(socket.getRemoteSocketAddress()));
         }
 
@@ -49,38 +53,51 @@ public final class ResponseThread implements Runnable {
         boolean cancelled = false;
         Throwable savedError = null;
         try (HInput input = new HInput(socket.getInputStream());
-            HOutput output = new HOutput(socket.getOutputStream())) {
+             HOutput output = new HOutput(socket.getOutputStream()))
+        {
             Type type = readHandshake(input, output);
-            if (type == null) { // Not accepted
+            if (type == null)
+            { // Not accepted
                 cancelled = true;
                 return;
             }
 
             // Start response
-            try {
+            try
+            {
                 respond(type, input, output);
-            } catch (RequestException e) {
+            }
+            catch (RequestException e)
+            {
                 LogHelper.subDebug(String.format("#%d Request error: %s", id, e.getMessage()));
                 output.writeString(e.getMessage(), 0);
             }
-        } catch (Throwable exc) {
+        }
+        catch (Throwable exc)
+        {
             savedError = exc;
             LogHelper.error(exc);
-        } finally {
+        }
+        finally
+        {
             IOHelper.close(socket);
-            if (!cancelled) {
+            if (!cancelled)
+            {
                 server.serverSocketHandler.onDisconnect(id, savedError);
             }
         }
     }
 
-    private Type readHandshake(HInput input, HOutput output) throws IOException {
+    private Type readHandshake(HInput input, HOutput output) throws IOException
+    {
         boolean legacy = false;
 
         // Verify magic number
         int magicNumber = input.readInt();
-        if (magicNumber != Launcher.PROTOCOL_MAGIC) {
-            if (magicNumber != Launcher.PROTOCOL_MAGIC - 1) { // Previous launcher protocol
+        if (magicNumber != Launcher.PROTOCOL_MAGIC)
+        {
+            if (magicNumber != Launcher.PROTOCOL_MAGIC - 1)
+            { // Previous launcher protocol
                 output.writeBoolean(false);
                 throw new IOException(String.format("#%d Protocol magic mismatch", id));
             }
@@ -89,18 +106,21 @@ public final class ResponseThread implements Runnable {
 
         // Verify key modulus
         BigInteger keyModulus = input.readBigInteger(SecurityHelper.RSA_KEY_LENGTH + 1);
-        if (!keyModulus.equals(server.privateKey.getModulus())) {
+        if (!keyModulus.equals(server.privateKey.getModulus()))
+        {
             output.writeBoolean(false);
             throw new IOException(String.format("#%d Key modulus mismatch", id));
         }
 
         // Read request type
         Type type = Type.read(input);
-        if (legacy && type != Type.LAUNCHER) {
+        if (legacy && type != Type.LAUNCHER)
+        {
             output.writeBoolean(false);
             throw new IOException(String.format("#%d Not LAUNCHER request on legacy protocol", id));
         }
-        if (!server.serverSocketHandler.onHandshake(id, type)) {
+        if (!server.serverSocketHandler.onHandshake(id, type))
+        {
             output.writeBoolean(false);
             return null;
         }
@@ -111,16 +131,21 @@ public final class ResponseThread implements Runnable {
         return type;
     }
 
-    private void respond(Type type, HInput input, HOutput output) throws Throwable {
-        if (server.serverSocketHandler.logConnections) {
+    private void respond(Type type, HInput input, HOutput output) throws Throwable
+    {
+        if (server.serverSocketHandler.logConnections)
+        {
             LogHelper.info("Connection #%d from %s: %s", id, IOHelper.getIP(socket.getRemoteSocketAddress()), type.name());
-        } else {
+        }
+        else
+        {
             LogHelper.subDebug("#%d Type: %s", id, type.name());
         }
 
         // Choose response based on type
         Response response;
-        switch (type) {
+        switch (type)
+        {
             case PING:
                 response = new PingResponse(server, id, input, output);
                 break;

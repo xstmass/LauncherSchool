@@ -1,42 +1,26 @@
 package launchserver.command.handler;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-
 import launcher.LauncherAPI;
 import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launchserver.LaunchServer;
 import launchserver.command.Command;
 import launchserver.command.CommandException;
-import launchserver.command.auth.AuthCommand;
-import launchserver.command.auth.CheckServerCommand;
-import launchserver.command.auth.JoinServerCommand;
-import launchserver.command.auth.UUIDToUsernameCommand;
-import launchserver.command.auth.UsernameToUUIDCommand;
-import launchserver.command.basic.BuildCommand;
-import launchserver.command.basic.ClearCommand;
-import launchserver.command.basic.DebugCommand;
-import launchserver.command.basic.EvalCommand;
-import launchserver.command.basic.GCCommand;
-import launchserver.command.basic.HelpCommand;
-import launchserver.command.basic.LogConnectionsCommand;
-import launchserver.command.basic.RebindCommand;
-import launchserver.command.basic.StopCommand;
-import launchserver.command.basic.VersionCommand;
+import launchserver.command.auth.*;
+import launchserver.command.basic.*;
 import launchserver.command.hash.*;
 import launchserver.command.legacy.DumpBinaryAuthHandler;
 
-public abstract class CommandHandler implements Runnable {
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+public abstract class CommandHandler implements Runnable
+{
     private final Map<String, Command> commands = new ConcurrentHashMap<>(32);
 
-    protected CommandHandler(LaunchServer server) {
+    protected CommandHandler(LaunchServer server)
+    {
         // Register basic commands
         registerCommand("help", new HelpCommand(server));
         registerCommand("version", new VersionCommand(server));
@@ -71,112 +55,30 @@ public abstract class CommandHandler implements Runnable {
         registerCommand("dumpBinaryAuthHandler", new DumpBinaryAuthHandler(server));
     }
 
-    @Override
-    public final void run() {
-        try {
-            readLoop();
-        } catch (IOException e) {
-            LogHelper.error(e);
-        }
-    }
-
-    @LauncherAPI
-    public abstract void bell() throws IOException;
-
-    @LauncherAPI
-    public abstract void clear() throws IOException;
-
-    @LauncherAPI
-    public abstract String readLine() throws IOException;
-
-    @LauncherAPI
-    public final Map<String, Command> commandsMap() {
-        return Collections.unmodifiableMap(commands);
-    }
-
-    @LauncherAPI
-    public final void eval(String line, boolean bell) {
-        LogHelper.info("Command '%s'", line);
-
-        // Parse line to tokens
-        String[] args;
-        try {
-            args = parse(line);
-        } catch (Throwable exc) {
-            LogHelper.error(exc);
-            return;
-        }
-
-        // Evaluate command
-        eval(args, bell);
-    }
-
-    @LauncherAPI
-    public final void eval(String[] args, boolean bell) {
-        if (args.length == 0) {
-            return;
-        }
-
-        // Measure start time and invoke command
-        long start = System.currentTimeMillis();
-        try {
-            lookup(args[0]).invoke(Arrays.copyOfRange(args, 1, args.length));
-        } catch (Throwable exc) {
-            LogHelper.error(exc);
-        }
-
-        // Bell if invocation took > 1s
-        long end = System.currentTimeMillis();
-        if (bell && end - start >= 5_000L) {
-            try {
-                bell();
-            } catch (IOException e) {
-                LogHelper.error(e);
-            }
-        }
-    }
-
-    @LauncherAPI
-    public final Command lookup(String name) throws CommandException {
-        Command command = commands.get(name);
-        if (command == null) {
-            throw new CommandException(String.format("Unknown command: '%s'", name));
-        }
-        return command;
-    }
-
-    @LauncherAPI
-    public final void registerCommand(String name, Command command) {
-        VerifyHelper.verifyIDName(name);
-        VerifyHelper.putIfAbsent(commands, name, Objects.requireNonNull(command, "command"),
-            String.format("Command has been already registered: '%s'", name));
-    }
-
-    private void readLoop() throws IOException {
-        for (String line = readLine(); line != null; line = readLine()) {
-            eval(line, true);
-        }
-    }
-
-    private static String[] parse(CharSequence line) throws CommandException {
+    private static String[] parse(CharSequence line) throws CommandException
+    {
         boolean quoted = false;
         boolean wasQuoted = false;
 
         // Read line char by char
         Collection<String> result = new LinkedList<>();
         StringBuilder builder = new StringBuilder(100);
-        for (int i = 0; i <= line.length(); i++) {
+        for (int i = 0; i <= line.length(); i++)
+        {
             boolean end = i >= line.length();
             char ch = end ? '\0' : line.charAt(i);
 
             // Maybe we should read next argument?
-            if (end || !quoted && Character.isWhitespace(ch)) {
-                if (end && quoted) { // Quotes should be closed
+            if (end || !quoted && Character.isWhitespace(ch))
+            {
+                if (end && quoted)
+                { // Quotes should be closed
                     throw new CommandException("Quotes wasn't closed");
                 }
 
                 // Empty args are ignored (except if was quoted)
-                if (wasQuoted || builder.length() > 0) {
+                if (wasQuoted || builder.length() > 0)
+                {
                     result.add(builder.toString());
                 }
 
@@ -187,13 +89,15 @@ public abstract class CommandHandler implements Runnable {
             }
 
             // Append next char
-            switch (ch) {
+            switch (ch)
+            {
                 case '"': // "abc"de, "abc""de" also allowed
                     quoted = !quoted;
                     wasQuoted = true;
                     break;
                 case '\\': // All escapes, including spaces etc
-                    if (i + 1 >= line.length()) {
+                    if (i + 1 >= line.length())
+                    {
                         throw new CommandException("Escape character is not specified");
                     }
                     char next = line.charAt(i + 1);
@@ -208,5 +112,115 @@ public abstract class CommandHandler implements Runnable {
 
         // Return result as array
         return result.toArray(new String[result.size()]);
+    }
+
+    @Override
+    public final void run()
+    {
+        try
+        {
+            readLoop();
+        }
+        catch (IOException e)
+        {
+            LogHelper.error(e);
+        }
+    }
+
+    @LauncherAPI
+    public abstract void bell() throws IOException;
+
+    @LauncherAPI
+    public abstract void clear() throws IOException;
+
+    @LauncherAPI
+    public abstract String readLine() throws IOException;
+
+    @LauncherAPI
+    public final Map<String, Command> commandsMap()
+    {
+        return Collections.unmodifiableMap(commands);
+    }
+
+    @LauncherAPI
+    public final void eval(String line, boolean bell)
+    {
+        LogHelper.info("Command '%s'", line);
+
+        // Parse line to tokens
+        String[] args;
+        try
+        {
+            args = parse(line);
+        }
+        catch (Throwable exc)
+        {
+            LogHelper.error(exc);
+            return;
+        }
+
+        // Evaluate command
+        eval(args, bell);
+    }
+
+    @LauncherAPI
+    public final void eval(String[] args, boolean bell)
+    {
+        if (args.length == 0)
+        {
+            return;
+        }
+
+        // Measure start time and invoke command
+        long start = System.currentTimeMillis();
+        try
+        {
+            lookup(args[0]).invoke(Arrays.copyOfRange(args, 1, args.length));
+        }
+        catch (Throwable exc)
+        {
+            LogHelper.error(exc);
+        }
+
+        // Bell if invocation took > 1s
+        long end = System.currentTimeMillis();
+        if (bell && end - start >= 5_000L)
+        {
+            try
+            {
+                bell();
+            }
+            catch (IOException e)
+            {
+                LogHelper.error(e);
+            }
+        }
+    }
+
+    @LauncherAPI
+    public final Command lookup(String name) throws CommandException
+    {
+        Command command = commands.get(name);
+        if (command == null)
+        {
+            throw new CommandException(String.format("Unknown command: '%s'", name));
+        }
+        return command;
+    }
+
+    @LauncherAPI
+    public final void registerCommand(String name, Command command)
+    {
+        VerifyHelper.verifyIDName(name);
+        VerifyHelper.putIfAbsent(commands, name, Objects.requireNonNull(command, "command"),
+                String.format("Command has been already registered: '%s'", name));
+    }
+
+    private void readLoop() throws IOException
+    {
+        for (String line = readLine(); line != null; line = readLine())
+        {
+            eval(line, true);
+        }
     }
 }

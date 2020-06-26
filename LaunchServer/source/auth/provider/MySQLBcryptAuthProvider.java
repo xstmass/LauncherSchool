@@ -1,12 +1,5 @@
 package launchserver.auth.provider;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.mindrot.jbcrypt.BCrypt;
-
 import launcher.helper.CommonHelper;
 import launcher.helper.SecurityHelper;
 import launcher.helper.VerifyHelper;
@@ -15,6 +8,12 @@ import launcher.serialize.config.entry.ListConfigEntry;
 import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.auth.AuthException;
 import launchserver.auth.MySQLSourceConfig;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public final class MySQLBcryptAuthProvider extends AuthProvider
 {
@@ -22,7 +21,7 @@ public final class MySQLBcryptAuthProvider extends AuthProvider
     private final String query;
     private final String[] queryParams;
 
-    public MySQLBcryptAuthProvider(BlockConfigEntry block)
+    MySQLBcryptAuthProvider(BlockConfigEntry block)
     {
         super(block);
         mySQLHolder = new MySQLSourceConfig("authProviderPool", block);
@@ -38,7 +37,7 @@ public final class MySQLBcryptAuthProvider extends AuthProvider
     {
         try (Connection c = mySQLHolder.getConnection(); PreparedStatement s = c.prepareStatement(query))
         {
-            String[] replaceParams = { "login", login, "password", password, "ip", ip };
+            String[] replaceParams = {"login", login, "password", password, "ip", ip};
             for (int i = 0; i < queryParams.length; i++)
             {
                 s.setString(i + 1, CommonHelper.replace(queryParams[i], replaceParams));
@@ -54,7 +53,8 @@ public final class MySQLBcryptAuthProvider extends AuthProvider
     }
 
     @Override
-    public void close() {
+    public void close()
+    {
         mySQLHolder.close();
     }
 }

@@ -4,26 +4,33 @@ import launcher.helper.CommonHelper;
 import launchserver.plugin.LaunchServerPluginBridge;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class LaunchServerPluginBukkit extends JavaPlugin {
+public final class LaunchServerPluginBukkit extends JavaPlugin
+{
     public volatile LaunchServerPluginBridge bridge = null;
 
     @Override
-    public void onDisable() {
+    public void onDisable()
+    {
         super.onDisable();
-        if (bridge != null) {
+        if (bridge != null)
+        {
             bridge.close();
             bridge = null;
         }
     }
 
     @Override
-    public void onEnable() {
+    public void onEnable()
+    {
         super.onEnable();
 
         // Initialize LaunchServer
-        try {
+        try
+        {
             bridge = new LaunchServerPluginBridge(getDataFolder().toPath());
-        } catch (Throwable exc) {
+        }
+        catch (Throwable exc)
+        {
             exc.printStackTrace();
         }
 
