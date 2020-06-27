@@ -1,6 +1,5 @@
 -injars 'Launcher.jar'
 -outjars 'Launcher-obf.jar'
--libraryjars 'build/libraries/obf'
 -libraryjars 'build/libraries/gson-2.8.0.jar'
 -libraryjars 'build/libraries/guava-17.0.jar'
 -libraryjars 'build/libraries/jansi-1.11.jar'
