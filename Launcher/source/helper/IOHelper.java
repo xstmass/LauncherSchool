@@ -733,6 +733,19 @@ public final class IOHelper
     }
 
     @LauncherAPI
+    public static URL convertToURL(String url)
+    {
+        try
+        {
+            return new URL(url);
+        }
+        catch (MalformedURLException e)
+        {
+            throw new IllegalArgumentException("Invalid URL", e);
+        }
+    }
+
+    @LauncherAPI
     public static void walk(Path dir, FileVisitor<Path> visitor, boolean hidden) throws IOException
     {
         Files.walkFileTree(dir, WALK_OPTIONS, Integer.MAX_VALUE, hidden ? visitor : new SkipHiddenVisitor(visitor));

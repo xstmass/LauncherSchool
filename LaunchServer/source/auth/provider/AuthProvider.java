@@ -28,6 +28,7 @@ public abstract class AuthProvider extends ConfigObject implements AutoCloseable
         registerProvider("mysql-bcrypt", MySQLBcryptAuthProvider::new);
         registerProvider("request", RequestAuthProvider::new);
         registerProvider("postgresql", PostgreSQLAuthProvider::new);
+        registerProvider("json", JsonAuthProvider::new);
     }
 
     @LauncherAPI
