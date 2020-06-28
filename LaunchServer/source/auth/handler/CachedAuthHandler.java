@@ -25,7 +25,7 @@ public abstract class CachedAuthHandler extends AuthHandler
     }
 
     @Override
-    public final synchronized UUID auth(AuthProviderResult result) throws IOException
+    public synchronized UUID auth(AuthProviderResult result) throws IOException
     {
         Entry entry = getEntry(result.username);
         if (entry == null || !updateAuth(entry.uuid, entry.username, result.accessToken))
@@ -41,7 +41,7 @@ public abstract class CachedAuthHandler extends AuthHandler
     }
 
     @Override
-    public final synchronized UUID checkServer(String username, String serverID) throws IOException
+    public synchronized UUID checkServer(String username, String serverID) throws IOException
     {
         Entry entry = getEntry(username);
         return entry != null && username.equals(entry.username) &&
@@ -49,7 +49,7 @@ public abstract class CachedAuthHandler extends AuthHandler
     }
 
     @Override
-    public final synchronized boolean joinServer(String username, String accessToken, String serverID) throws IOException
+    public synchronized boolean joinServer(String username, String accessToken, String serverID) throws IOException
     {
         Entry entry = getEntry(username);
         if (entry == null || !username.equals(entry.username) || !accessToken.equals(entry.accessToken) ||
@@ -64,14 +64,14 @@ public abstract class CachedAuthHandler extends AuthHandler
     }
 
     @Override
-    public final synchronized UUID usernameToUUID(String username) throws IOException
+    public synchronized UUID usernameToUUID(String username) throws IOException
     {
         Entry entry = getEntry(username);
         return entry == null ? null : entry.uuid;
     }
 
     @Override
-    public final synchronized String uuidToUsername(UUID uuid) throws IOException
+    public synchronized String uuidToUsername(UUID uuid) throws IOException
     {
         Entry entry = getEntry(uuid);
         return entry == null ? null : entry.username;
