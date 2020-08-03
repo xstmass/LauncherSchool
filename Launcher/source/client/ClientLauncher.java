@@ -285,6 +285,10 @@ public final class ClientLauncher
             Collections.addAll(args, "--versionType", "KJ-Launcher v" + Launcher.VERSION);
         }
 
+        // Fix `-XstartOnFirstThread` in MacOS
+        if (version.compareTo(Version.MC1132) >= 0 && JVMHelper.OS_TYPE == OS.MACOSX)
+            Collections.addAll(args, "-XstartOnFirstThread");
+
         // Add server args
         if (params.autoEnter)
         {
