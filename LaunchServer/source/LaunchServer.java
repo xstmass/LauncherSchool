@@ -195,7 +195,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
             try
             {
                 URL url;
-                url = new URL("https://launcher-sashok724.keeperjerry.ru/versions.php");
+                url = new URL("https://launcher-sashok724.keeperjerry.ru/versions.json");
                 URLConnection conn = url.openConnection();
                 BufferedReader getStatus = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
