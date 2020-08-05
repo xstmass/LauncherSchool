@@ -1,5 +1,7 @@
 package launchserver;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
 import launcher.Launcher;
 import launcher.LauncherAPI;
 import launcher.client.ClientProfile;
@@ -40,9 +42,11 @@ import javax.script.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.KeyPair;
@@ -184,6 +188,44 @@ public final class LaunchServer implements Runnable, AutoCloseable
         launcherBinary = new JARLauncherBinary(this);
         launcherEXEBinary = config.launch4J ? new EXEL4JLauncherBinary(this) : new EXELauncherBinary(this);
         syncLauncherBinaries();
+
+        if (config.checkServerUpdate)
+        {
+            LogHelper.info("Check updates from KeeperJerry...");
+            try
+            {
+                URL url;
+                url = new URL("https://launcher-sashok724.keeperjerry.ru/versions.json");
+                URLConnection conn = url.openConnection();
+                BufferedReader getStatus = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                JsonObject object = Json.parse(getStatus.readLine()).asObject();
+                String version = object.get("version").asString();
+                String date = object.get("date").asString();
+                String note = object.get("note").asString();
+
+                if (Launcher.VERSION.equals(version))
+                {
+                    LogHelper.info("You have the latest version!");
+                }
+                else
+                {
+                    LogHelper.info("================================");
+                    LogHelper.info("FOUND NEW VERSION: " + version);
+                    LogHelper.info("Relese data: " + date);
+                    LogHelper.info("Note: " + note);
+                    LogHelper.info("================================");
+                }
+            }
+            catch (Throwable exc)
+            {
+                LogHelper.error(exc);
+            }
+        }
+        else
+        {
+            LogHelper.info("Check for updates is disabled!");
+        }
 
         // Sync updates dir
         if (!IOHelper.isDir(updatesDir))
@@ -519,6 +561,10 @@ public final class LaunchServer implements Runnable, AutoCloseable
         @LauncherAPI
         public final String mirror;
 
+        // Update
+        @LauncherAPI
+        public final boolean checkServerUpdate;
+
         // BinaryName
         @LauncherAPI
         public final String binaryName;
@@ -555,6 +601,9 @@ public final class LaunchServer implements Runnable, AutoCloseable
                     block.getEntry("authProviderConfig", BlockConfigEntry.class));
             textureProvider = TextureProvider.newProvider(block.getEntryValue("textureProvider", StringConfigEntry.class),
                     block.getEntry("textureProviderConfig", BlockConfigEntry.class));
+
+            // Check Update
+            checkServerUpdate = block.getEntryValue("checkServerUpdate", BooleanConfigEntry.class);
 
             // Mirror
             mirror = block.getEntryValue("mirror", StringConfigEntry.class);
