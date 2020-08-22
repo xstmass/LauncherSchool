@@ -28,6 +28,7 @@ public abstract class AuthHandler extends ConfigObject implements AutoCloseable
         registerHandler("mysql", MySQLAuthHandler::new);
         registerHandler("postgresql", PostgreSQLAuthHandler::new);
         registerHandler("json", JsonAuthHandler::new);
+        registerHandler("sqlite", SQLiteAuthHandler::new);
     }
 
     @LauncherAPI
