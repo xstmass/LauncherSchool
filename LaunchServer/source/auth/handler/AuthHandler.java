@@ -26,6 +26,8 @@ public abstract class AuthHandler extends ConfigObject implements AutoCloseable
         registerHandler("binaryFile", BinaryFileAuthHandler::new);
         registerHandler("textFile", TextFileAuthHandler::new);
         registerHandler("mysql", MySQLAuthHandler::new);
+        registerHandler("mysql-8", MySQL8AuthHandler::new);
+        registerHandler("mariadb", MariaDBAuthHandler::new);
         registerHandler("postgresql", PostgreSQLAuthHandler::new);
         registerHandler("json", JsonAuthHandler::new);
     }
