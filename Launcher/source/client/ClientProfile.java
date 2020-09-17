@@ -217,8 +217,10 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     @LauncherAPI
     public enum Version
     {
-        // На всякий случай
+        // На всякий случай протоколы:
         // https://minecraft.gamepedia.com/Protocol_version
+        // Официальные версии с аргументами и т.д.:
+        // https://launchermeta.mojang.com/mc/game/version_manifest.json
 
         // 1.4.x
         MC147("1.4.7", 51),
@@ -296,8 +298,10 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
         // 1.16.x
         MC1160("1.16", 735),
         MC1161("1.16.1", 736),
-        MC1162("1.16.2", 751);
+        MC1162("1.16.2", 751),
+        MC1163("1.16.3", 753);
 
+        // Попожа тут будет рефактор на json, не дело это добавлять каждый раз...
         private static final Map<String, Version> VERSIONS;
 
         static
