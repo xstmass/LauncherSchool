@@ -30,6 +30,7 @@ public abstract class AuthHandler extends ConfigObject implements AutoCloseable
         registerHandler("mariadb", MariaDBAuthHandler::new);
         registerHandler("postgresql", PostgreSQLAuthHandler::new);
         registerHandler("json", JsonAuthHandler::new);
+        registerHandler("sqlite", SQLiteAuthHandler::new);
     }
 
     @LauncherAPI
