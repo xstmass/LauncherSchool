@@ -299,7 +299,9 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
         MC1160("1.16", 735),
         MC1161("1.16.1", 736),
         MC1162("1.16.2", 751),
-        MC1163("1.16.3", 753);
+        MC1163("1.16.3", 753),
+        MC1164("1.16.4", 754);
+        // MC1165("1.16.5", 755); // Вангую
 
         // Попожа тут будет рефактор на json, не дело это добавлять каждый раз...
         private static final Map<String, Version> VERSIONS;
