@@ -186,7 +186,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
 
         // Set launcher EXE binary
         launcherBinary = new JARLauncherBinary(this);
-        launcherEXEBinary = config.launch4J ? new EXEL4JLauncherBinary(this) : new EXELauncherBinary(this);
+        launcherEXEBinary = binary();
         syncLauncherBinaries();
 
         if (config.checkServerUpdate)
@@ -371,6 +371,11 @@ public final class LaunchServer implements Runnable, AutoCloseable
             CommonHelper.newThread("Command Thread", true, commandHandler).start();
         }
         rebindServerSocket();
+    }
+
+    private LauncherBinary binary() {
+        if (config.launch4J.enabled) return new EXEL4JLauncherBinary(this);
+        return new EXELauncherBinary(this);
     }
 
     @LauncherAPI
@@ -571,7 +576,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
 
         // Misc options
         @LauncherAPI
-        public final boolean launch4J;
+        public final ExeConf launch4J;
         @LauncherAPI
         public final boolean compress;
         private final StringConfigEntry address;
@@ -609,9 +614,34 @@ public final class LaunchServer implements Runnable, AutoCloseable
             mirror = block.getEntryValue("mirror", StringConfigEntry.class);
 
             // Set misc config
-            launch4J = block.getEntryValue("launch4J", BooleanConfigEntry.class);
+            launch4J = new ExeConf(block.getEntry("launch4J", BlockConfigEntry.class));
             binaryName = block.getEntryValue("binaryName", StringConfigEntry.class);
             compress = block.getEntryValue("compress", BooleanConfigEntry.class);
+        }
+
+        public static class ExeConf extends ConfigObject {
+            public final boolean enabled;
+            public String productName;
+            public String fileDesc;
+            public String internalName;
+            public String copyright;
+            public String trademarks;
+
+            private ExeConf(BlockConfigEntry block)
+            {
+                super(block);
+                enabled = block.getEntryValue("enabled", BooleanConfigEntry.class);
+                productName = block.hasEntry("productName") ? block.getEntryValue("productName", StringConfigEntry.class)
+                        : "LauncherSchool";
+                fileDesc = block.hasEntry("fileDesc") ? block.getEntryValue("fileDesc", StringConfigEntry.class)
+                        : "LauncherSchool by KeeperJerry";
+                internalName = block.hasEntry("internalName") ? block.getEntryValue("internalName", StringConfigEntry.class)
+                        : "Launcher";
+                copyright = block.hasEntry("copyright") ? block.getEntryValue("copyright", StringConfigEntry.class)
+                        : "© KeeperJerry";
+                trademarks = block.hasEntry("trademarks") ? block.getEntryValue("trademarks", StringConfigEntry.class)
+                        : "This product is licensed under GNU v3.0";
+            }
         }
 
         @LauncherAPI

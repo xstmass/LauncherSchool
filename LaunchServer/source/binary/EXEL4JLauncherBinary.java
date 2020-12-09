@@ -82,21 +82,21 @@ public final class EXEL4JLauncherBinary extends LauncherBinary
 
         // Prepare version info (product)
         VersionInfo info = new VersionInfo();
-        info.setProductName("KeeperJerry's Launcher");
-        info.setProductVersion("1.0.0.0");
+        info.setProductName(server.config.launch4J.productName);
+        info.setProductVersion(Launcher.VERSION);
         info.setTxtProductVersion(Launcher.VERSION + ", build " + Launcher.BUILD);
 
         // Prepare version info (file)
-        info.setFileDescription("KeeperJerry's Launcher");
-        info.setFileVersion("1.0.0.0");
+        info.setFileDescription(server.config.launch4J.fileDesc);
+        info.setFileVersion(Launcher.VERSION);
         info.setTxtFileVersion(Launcher.VERSION + ", build " + Launcher.BUILD);
         info.setOriginalFilename(binaryFile.getFileName().toString());
 
         // Prepare version info (misc)
-        info.setInternalName("Launcher");
-        info.setCopyright("© KeeperJerry & sashok724 LLC");
-        info.setTrademarks("This product is licensed under WTFPL 2.0");
-        info.setLanguage(LanguageID.ENGLISH_US);
+        info.setInternalName(server.config.launch4J.internalName);
+        info.setCopyright(server.config.launch4J.copyright);
+        info.setTrademarks(server.config.launch4J.trademarks);
+        info.setLanguage(LanguageID.RUSSIAN);
         config.setVersionInfo(info);
 
         // Set JAR wrapping options
