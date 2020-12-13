@@ -7,6 +7,7 @@ import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launcher.serialize.config.ConfigObject;
 import launcher.serialize.config.entry.BlockConfigEntry;
+import launcher.serialize.config.entry.BooleanConfigEntry;
 import launcher.serialize.config.entry.IntegerConfigEntry;
 import launcher.serialize.config.entry.StringConfigEntry;
 
@@ -33,6 +34,8 @@ public final class MySQL8SourceConfig extends ConfigObject implements AutoClosea
     private final String username;
     private final String password;
     private final String database;
+    private final boolean useSSL;
+    private String timeZone;
 
     // Cache
     private DataSource source;
@@ -52,6 +55,9 @@ public final class MySQL8SourceConfig extends ConfigObject implements AutoClosea
         password = block.getEntryValue("password", StringConfigEntry.class);
         database = VerifyHelper.verify(block.getEntryValue("database", StringConfigEntry.class),
                 VerifyHelper.NOT_EMPTY, "MySQL database can't be empty");
+        timeZone = block.hasEntry("timezone") ?  VerifyHelper.verify(block.getEntryValue("timezone", StringConfigEntry.class),
+                VerifyHelper.NOT_EMPTY, "MySQL time zone can't be empty") : null;
+        useSSL = block.hasEntry("useSSL") ?  block.getEntryValue("timezone", BooleanConfigEntry.class) : true;
 
         // Password shouldn't be verified
     }
@@ -72,7 +78,7 @@ public final class MySQL8SourceConfig extends ConfigObject implements AutoClosea
         { // New data source
             MysqlDataSource mysqlSource = new MysqlDataSource();
             mysqlSource.setCharacterEncoding("UTF-8");
-            mysqlSource.setUseSSL(false);
+            mysqlSource.setUseSSL(useSSL);
 
             // Prep statements cache
             mysqlSource.setPrepStmtCacheSize(250);
@@ -95,6 +101,8 @@ public final class MySQL8SourceConfig extends ConfigObject implements AutoClosea
             mysqlSource.setUser(username);
             mysqlSource.setPassword(password);
             mysqlSource.setDatabaseName(database);
+
+            if (timeZone != null) mysqlSource.setServerTimezone(timeZone);
 
             // Try using HikariCP
             source = mysqlSource;
