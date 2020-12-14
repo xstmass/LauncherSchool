@@ -205,15 +205,16 @@ public final class ClientLauncher
              DirWatcher assetWatcher = new DirWatcher(params.assetDir, assetHDir.object, assetMatcher, digest);
              DirWatcher clientWatcher = new DirWatcher(params.clientDir, clientHDir.object, clientMatcher, digest))
         {
+            // Start WatchService, and only then client
+            CommonHelper.newThread("JVM Directory Watcher", true, jvmWatcher).start();
+            CommonHelper.newThread("Asset Directory Watcher", true, assetWatcher).start();
+            CommonHelper.newThread("Client Directory Watcher", true, clientWatcher).start();
+
             // Verify current state of all dirs
             verifyHDir(IOHelper.JVM_DIR, jvmHDir.object, null, digest);
             verifyHDir(params.assetDir, assetHDir.object, assetMatcher, digest);
             verifyHDir(params.clientDir, clientHDir.object, clientMatcher, digest);
 
-            // Start WatchService, and only then client
-            CommonHelper.newThread("JVM Directory Watcher", true, jvmWatcher).start();
-            CommonHelper.newThread("Asset Directory Watcher", true, assetWatcher).start();
-            CommonHelper.newThread("Client Directory Watcher", true, clientWatcher).start();
             launch(profile.object, params);
         }
     }
