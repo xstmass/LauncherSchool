@@ -21,6 +21,7 @@ import launchserver.auth.MySQLSourceConfig;
 import launchserver.auth.handler.AuthHandler;
 import launchserver.auth.handler.CachedAuthHandler;
 import launchserver.auth.handler.FileAuthHandler;
+import launchserver.auth.hwid.HWIDHandler;
 import launchserver.auth.provider.AuthProvider;
 import launchserver.auth.provider.DigestAuthProvider;
 import launchserver.binary.EXEL4JLauncherBinary;
@@ -306,6 +307,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
         {
             LogHelper.error(e);
         }
+
         try
         {
             config.authProvider.close();
@@ -314,6 +316,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
         {
             LogHelper.error(e);
         }
+
         try
         {
             config.textureProvider.close();
@@ -336,6 +339,16 @@ public final class LaunchServer implements Runnable, AutoCloseable
         {
             LogHelper.error(exc);
         }
+
+        try
+        {
+            config.hwidHandler.close();
+        }
+        catch (IOException e)
+        {
+            LogHelper.error(e);
+        }
+
 
         // Print last message before death :(
         LogHelper.info("LaunchServer stopped");
@@ -574,6 +587,10 @@ public final class LaunchServer implements Runnable, AutoCloseable
         @LauncherAPI
         public final String binaryName;
 
+        // HWID Manager
+        @LauncherAPI
+        public final HWIDHandler hwidHandler;
+
         // Misc options
         @LauncherAPI
         public final ExeConf launch4J;
@@ -606,6 +623,9 @@ public final class LaunchServer implements Runnable, AutoCloseable
                     block.getEntry("authProviderConfig", BlockConfigEntry.class));
             textureProvider = TextureProvider.newProvider(block.getEntryValue("textureProvider", StringConfigEntry.class),
                     block.getEntry("textureProviderConfig", BlockConfigEntry.class));
+            hwidHandler = HWIDHandler.newHandler(block.getEntryValue("hwidHandler", StringConfigEntry.class),
+                    block.getEntry("hwidHandlerConfig", BlockConfigEntry.class));
+
 
             // Check Update
             checkServerUpdate = block.getEntryValue("checkServerUpdate", BooleanConfigEntry.class);
