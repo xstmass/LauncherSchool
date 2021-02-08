@@ -120,7 +120,7 @@ public final class ServerPinger
             {
                 try (HOutput packetOutput = new HOutput(packetArray))
                 {
-                    packetOutput.writeUnsignedByte(version.protocol); // Protocol version
+                    packetOutput.writeUnsignedByte(78); // Protocol version // Для пинга можно указывать любой (здесь с 1.6.4)
                     writeUTF16String(packetOutput, address.getHostString()); // Server address
                     packetOutput.writeInt(address.getPort()); // Server port
                 }
@@ -156,7 +156,7 @@ public final class ServerPinger
             throw new IOException("Magic string mismatch: " + magic);
         }
         int protocol = Integer.parseInt(splitted[1]);
-        if (protocol != version.protocol)
+        if (protocol != 78) // Смотри строку 123
         {
             throw new IOException("Protocol mismatch: " + protocol);
         }
@@ -183,7 +183,7 @@ public final class ServerPinger
             try (HOutput packetOutput = new HOutput(packetArray))
             {
                 packetOutput.writeVarInt(0x0); // Handshake packet ID
-                packetOutput.writeVarInt(version.protocol); // Protocol version
+                packetOutput.writeVarInt(-1); // Protocol version // Опять же для пинга версия протокола не важна
                 packetOutput.writeString(address.getHostString(), 0); // Server address
                 packetOutput.writeShort((short) address.getPort()); // Server port
                 packetOutput.writeVarInt(0x1); // Next state - status
