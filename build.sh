@@ -6,18 +6,18 @@ mv buildnumber.txt buildnumber
 
 # Build Launcher.jar
 echo Building Launcher.jar...
-"C:\Users\mrcat\.jdks\liberica-1.8.0_282\bin\jar.exe" -uf Launcher.jar buildnumber
-"C:\Users\mrcat\.jdks\liberica-1.8.0_282\bin\java.exe" -jar build/proguard.jar @Launcher.pro
+jar -uf Launcher.jar buildnumber
+java -jar build/proguard.jar @Launcher.pro
 rm Launcher.jar
 mv Launcher-obf.jar Launcher.jar
 # java -jar build/stringer.jar -configFile Launcher.stringer Launcher.jar Launcher.jar
-"C:\Users\mrcat\.jdks\liberica-1.8.0_282\bin\pack200.exe" -E9 -Htrue -mlatest -Upass -r Launcher.jar
-"C:\Users\mrcat\.jdks\liberica-1.8.0_282\bin\jarsigner.exe" -keystore build/keeperjerry.jks -storepass PSP1448 -sigfile LAUNCHER Launcher.jar keeperjerry
-"C:\Users\mrcat\.jdks\liberica-1.8.0_282\bin\pack200.exe" Launcher.pack.gz Launcher.jar
+pack200 -E9 -Htrue -mlatest -Upass -r Launcher.jar
+jarsigner -keystore build/keeperjerry.jks -storepass PSP1448 -sigfile LAUNCHER Launcher.jar keeperjerry
+pack200 Launcher.pack.gz Launcher.jar
 
 # Build LaunchServer.jar
 echo Building LaunchServer.jar...
-"C:\Users\mrcat\.jdks\liberica-1.8.0_282\bin\jar.exe" -uf LaunchServer.jar Launcher.pack.gz buildnumber
-"C:\Users\mrcat\.jdks\liberica-1.8.0_282\bin\pack200.exe" -E9 -Htrue -mlatest -Upass -r LaunchServer.jar
-"C:\Users\mrcat\.jdks\liberica-1.8.0_282\bin\jarsigner.exe" -keystore build/keeperjerry.jks -storepass PSP1448 -sigfile LAUNCHER LaunchServer.jar keeperjerry
+jar -uf LaunchServer.jar Launcher.pack.gz buildnumber
+pack200 -E9 -Htrue -mlatest -Upass -r LaunchServer.jar
+jarsigner -keystore build/keeperjerry.jks -storepass PSP1448 -sigfile LAUNCHER LaunchServer.jar keeperjerry
 rm Launcher.pack.gz
