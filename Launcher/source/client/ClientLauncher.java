@@ -122,8 +122,8 @@ public final class ClientLauncher
 
         // Add classpath and main class
         Collections.addAll(args, profile.object.getJvmArgs());
-        Version v = profile.object.getVersion();
-        if (v.compareTo(Version.MC1132) >= 0 && JVMHelper.OS_TYPE == OS.MACOSX)
+        String v = profile.object.getVersion();
+        if (Version.compare(v, "1.13") >= 0 && JVMHelper.OS_TYPE == OS.MACOSX)
             Collections.addAll(args, "-XstartOnFirstThread");
         Collections.addAll(args, "-classpath", IOHelper.getCodeSource(ClientLauncher.class).toString(), ClientLauncher.class.getName());
         args.add(paramsFile.toString()); // Add params file path to args
@@ -246,18 +246,21 @@ public final class ClientLauncher
         PlayerProfile pp = params.pp;
 
         // Add version-dependent args
-        Version version = profile.getVersion();
+        String version = profile.getVersion();
         Collections.addAll(args, "--username", pp.username);
-        if (version.compareTo(Version.MC172) >= 0)
+        if (Version.compare(version, "1.7.2") >= 0)
         {
             Collections.addAll(args, "--uuid", toHash(pp.uuid));
             Collections.addAll(args, "--accessToken", params.accessToken);
 
-            // Add 1.7.10+ args (user properties, asset index)
-            if (version.compareTo(Version.MC1710) >= 0)
+            // Add 1.7.3+ args (user properties, asset index)
+            if (Version.compare(version, "1.7.3") >= 0)
             {
                 // Add user properties
-                Collections.addAll(args, "--userType", "mojang");
+                if (Version.compare(version, "1.7.4") >= 0)
+                {
+                    Collections.addAll(args, "--userType", "mojang");
+                }
                 JsonObject properties = Json.object();
                 if (pp.skin != null)
                 {
@@ -281,11 +284,11 @@ public final class ClientLauncher
         }
 
         // Add version and dirs args
-        Collections.addAll(args, "--version", profile.getVersion().name);
+        Collections.addAll(args, "--version", profile.getVersion());
         Collections.addAll(args, "--gameDir", params.clientDir.toString());
         Collections.addAll(args, "--assetsDir", params.assetDir.toString());
         Collections.addAll(args, "--resourcePackDir", params.clientDir.resolve(RESOURCEPACKS_DIR).toString());
-        if (version.compareTo(Version.MC194) >= 0)
+        if (Version.compare(version, "1.9.0") >= 0)
         { // Just to show it in debug screen
             Collections.addAll(args, "--versionType", "KJ-Launcher v" + Launcher.VERSION);
         }
@@ -315,7 +318,7 @@ public final class ClientLauncher
         args.add(params.accessToken);
 
         // Add args for tweaker
-        Collections.addAll(args, "--version", profile.getVersion().name);
+        Collections.addAll(args, "--version", profile.getVersion());
         Collections.addAll(args, "--gameDir", params.clientDir.toString());
         Collections.addAll(args, "--assetsDir", params.assetDir.toString());
     }
@@ -327,7 +330,7 @@ public final class ClientLauncher
 
         // Add client args
         Collection<String> args = new LinkedList<>();
-        if (profile.getVersion().compareTo(Version.MC164) >= 0)
+        if (Version.compare(profile.getVersion(), "1.6.0") >= 0)
         {
             addClientArgs(args, profile, params);
         }

@@ -12,8 +12,6 @@ import launcher.serialize.stream.StreamObject;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 @SuppressWarnings("ComparableImplementedButEqualsNotOverridden")
 public final class ClientProfile extends ConfigObject implements Comparable<ClientProfile>
@@ -92,15 +90,12 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     }
 
     @LauncherAPI
-    public String getAssetIndex()
-    {
-        return assetIndex.getValue();
-    }
+    public String getAssetIndex() { return assetIndex.getValue(); }
 
     @LauncherAPI
     public FileNameMatcher getAssetUpdateMatcher()
     {
-        return getVersion().compareTo(Version.MC1710) >= 0 ? ASSET_MATCHER : null;
+        return Version.compare(getVersion(), "1.7.3") >= 0 ? ASSET_MATCHER : null;
     }
 
     @LauncherAPI
@@ -173,16 +168,7 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     }
 
     @LauncherAPI
-    public Version getVersion()
-    {
-        return Version.byName(version.getValue());
-    }
-
-    @LauncherAPI
-    public void setVersion(Version version)
-    {
-        this.version.setValue(version.name);
-    }
+    public String getVersion() { return version.getValue(); }
 
     @LauncherAPI
     public boolean isUpdateFastCheck()
@@ -194,8 +180,8 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     public void verify()
     {
         // Version
-        getVersion();
-        IOHelper.verifyFileName(getAssetIndex());
+        VerifyHelper.verify(getVersion(), VerifyHelper.NOT_EMPTY, "Game version can't be empty");
+        IOHelper.verifyFileName(getAssetIndex()); // А в смысле, там же версия, какой нахуй FileName?
 
         // Client
         VerifyHelper.verify(getTitle(), VerifyHelper.NOT_EMPTY, "Profile title can't be empty");
@@ -214,126 +200,20 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
         VerifyHelper.verify(getTitle(), VerifyHelper.NOT_EMPTY, "Main class can't be empty");
     }
 
-    @LauncherAPI
-    public enum Version
-    {
-        // На всякий случай протоколы:
-        // https://minecraft.gamepedia.com/Protocol_version
-        // Официальные версии с аргументами и т.д.:
-        // https://launchermeta.mojang.com/mc/game/version_manifest.json
-
-        // 1.4.x
-        MC147("1.4.7", 51),
-
-        // 1.5.x
-        MC152("1.5.2", 61),
-
-        // 1.6.x
-        MC164("1.6.4", 78),
-
-        // 1.7.x
-        MC17("1.7", 3),
-        MC171("1.7.1", 3),
-        MC172("1.7.2", 4),
-        MC173("1.7.3", 4),
-        MC174("1.7.4", 4),
-        MC175("1.7.5", 4),
-        MC176("1.7.6", 5),
-        MC177("1.7.7", 5),
-        MC178("1.7.8", 5),
-        MC179("1.7.9", 5),
-        MC1710("1.7.10", 5),
-
-        // 1.8.x
-        MC18("1.8", 47),
-        MC181("1.8.1", 47),
-        MC182("1.8.2", 47),
-        MC183("1.8.3", 47),
-        MC184("1.8.4", 47),
-        MC185("1.8.5", 47),
-        MC186("1.8.6", 47),
-        MC187("1.8.7", 47),
-        MC188("1.8.8", 47),
-        MC189("1.8.9", 47),
-
-        // 1.9.x
-        MC19("1.9", 107),
-        MC191("1.9.1", 108),
-        MC192("1.9.2", 109),
-        MC193("1.9.3", 110),
-        MC194("1.9.4", 110),
-
-        // 1.10.x
-        MC110("1.10", 210),
-        MC1101("1.10.1", 210),
-        MC1102("1.10.2", 210),
-
-        // 1.11.x
-        MC111("1.11", 315),
-        MC1111("1.11.1", 316),
-        MC1112("1.11.2", 316),
-
-        // 1.12.x
-        MC112("1.12", 335),
-        MC1121("1.12.1", 338),
-        MC1122("1.12.2", 340),
-
-        // 1.13.x
-        MC113("1.13", 393),
-        MC1131("1.13.1", 401),
-        MC1132("1.13.2", 404),
-
-        // 1.14.x
-        MC114("1.14", 477),
-        MC1141("1.14.1", 480),
-        MC1142("1.14.2", 485),
-        MC1143("1.14.3", 490),
-        MC1144("1.14.4", 498),
-
-        // 1.15.x
-        MC115("1.15", 573),
-        MC1151("1.15.1", 575),
-        MC1152("1.15.2", 578),
-
-        // 1.16.x
-        MC1160("1.16", 735),
-        MC1161("1.16.1", 736),
-        MC1162("1.16.2", 751),
-        MC1163("1.16.3", 753),
-        MC1164("1.16.4", 754);
-        // MC1165("1.16.5", 755); // Вангую
-
-        // Попожа тут будет рефактор на json, не дело это добавлять каждый раз...
-        private static final Map<String, Version> VERSIONS;
-
-        static
-        {
-            Version[] versionsValues = values();
-            VERSIONS = new HashMap<>(versionsValues.length);
-            for (Version version : versionsValues)
-            {
-                VERSIONS.put(version.name, version);
+    // Можно конечно угореть и парсить версии с https://launchermeta.mojang.com/mc/game/version_manifest.json
+    // Но имеет ли это смысл? Даже такой простенький обработчик будет спокойно справляться с сравнением релизных версий
+    public static class Version {
+        public static int compare(String originVersion, String comparedVersion) {
+            String[] originVersionParts = originVersion.split("\\.");
+            String[] comparedVersionParts = comparedVersion.split("\\.");
+            int length = Math.max(originVersionParts.length, comparedVersionParts.length);
+            for(int i = 0; i < length; i++) {
+                int originVersionPart = i < originVersionParts.length ? Integer.parseInt(originVersionParts[i]) : 0;
+                int comparedVersionPart = i < comparedVersionParts.length ? Integer.parseInt(comparedVersionParts[i]) : 0;
+                if(originVersionPart < comparedVersionPart) return -1;
+                if(originVersionPart > comparedVersionPart) return 1;
             }
-        }
-
-        public final String name;
-        public final int protocol;
-
-        Version(String name, int protocol)
-        {
-            this.name = name;
-            this.protocol = protocol;
-        }
-
-        public static Version byName(String name)
-        {
-            return VerifyHelper.getMapValue(VERSIONS, name, String.format("Unknown client version: '%s'", name));
-        }
-
-        @Override
-        public String toString()
-        {
-            return "Minecraft " + name;
+            return 0;
         }
     }
 }

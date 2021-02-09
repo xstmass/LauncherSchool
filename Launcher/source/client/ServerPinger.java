@@ -29,7 +29,7 @@ public final class ServerPinger
 
     // Instance
     private final InetSocketAddress address;
-    private final Version version;
+    private final String version;
 
     // Cache
     private final Object cacheLock = new Object();
@@ -38,7 +38,7 @@ public final class ServerPinger
     private long cacheUntil = Long.MIN_VALUE;
 
     @LauncherAPI
-    public ServerPinger(InetSocketAddress address, Version version)
+    public ServerPinger(InetSocketAddress address, String version)
     {
         this.address = Objects.requireNonNull(address, "address");
         this.version = Objects.requireNonNull(version, "version");
@@ -100,7 +100,7 @@ public final class ServerPinger
             try (HInput input = new HInput(socket.getInputStream());
                  HOutput output = new HOutput(socket.getOutputStream()))
             {
-                return version.compareTo(Version.MC172) >= 0 ? modernPing(input, output) : legacyPing(input, output, version.compareTo(Version.MC164) >= 0);
+                return Version.compare(version, "1.7") >= 0 ? modernPing(input, output) : legacyPing(input, output, Version.compare(version, "1.6") >= 0);
             }
         }
     }
@@ -120,7 +120,7 @@ public final class ServerPinger
             {
                 try (HOutput packetOutput = new HOutput(packetArray))
                 {
-                    packetOutput.writeUnsignedByte(version.protocol); // Protocol version
+                    packetOutput.writeUnsignedByte(78); // Protocol version // Для пинга можно указывать любой (здесь с 1.6.4)
                     writeUTF16String(packetOutput, address.getHostString()); // Server address
                     packetOutput.writeInt(address.getPort()); // Server port
                 }
@@ -156,12 +156,12 @@ public final class ServerPinger
             throw new IOException("Magic string mismatch: " + magic);
         }
         int protocol = Integer.parseInt(splitted[1]);
-        if (protocol != version.protocol)
+        if (protocol != 78) // Смотри строку 123
         {
             throw new IOException("Protocol mismatch: " + protocol);
         }
         String clientVersion = splitted[2];
-        if (!clientVersion.equals(version.name))
+        if (!clientVersion.equals(version))
         {
             throw new IOException(String.format("Version mismatch: '%s'", clientVersion));
         }
@@ -183,7 +183,7 @@ public final class ServerPinger
             try (HOutput packetOutput = new HOutput(packetArray))
             {
                 packetOutput.writeVarInt(0x0); // Handshake packet ID
-                packetOutput.writeVarInt(version.protocol); // Protocol version
+                packetOutput.writeVarInt(-1); // Protocol version // Опять же для пинга версия протокола не важна
                 packetOutput.writeString(address.getHostString(), 0); // Server address
                 packetOutput.writeShort((short) address.getPort()); // Server port
                 packetOutput.writeVarInt(0x1); // Next state - status

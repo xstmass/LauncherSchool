@@ -42,7 +42,6 @@ public final class DownloadClientCommand extends Command
     public void invoke(String... args) throws Throwable
     {
         verifyArgs(args, 2);
-        Version version = Version.byName(args[0]);
         String dirName = IOHelper.verifyFileName(args[1]);
         Path clientDir = server.updatesDir.resolve(args[1]);
 
@@ -54,12 +53,12 @@ public final class DownloadClientCommand extends Command
         LogHelper.subInfo("Downloading client, it may take some time");
         CLIENT_URL_MASK = server.config.mirror + "clients/%s.zip";
         DownloadAssetCommand.unpack(new URL(String.format(CLIENT_URL_MASK,
-                IOHelper.urlEncode(version.name))), clientDir);
+                IOHelper.urlEncode(args[0]))), clientDir);
 
         // Create profile file
         LogHelper.subInfo("Creaing profile file: '%s'", dirName);
         ClientProfile client;
-        String profilePath = String.format("launchserver/defaults/profile%s.cfg", version.name);
+        String profilePath = String.format("launchserver/defaults/profile%s.cfg", args[0]);
         try (BufferedReader reader = IOHelper.newReader(IOHelper.getResourceURL(profilePath)))
         {
             client = new ClientProfile(TextConfigReader.read(reader, false));

@@ -58,7 +58,6 @@ public final class DownloadAssetCommand extends Command
     public void invoke(String... args) throws Throwable
     {
         verifyArgs(args, 2);
-        Version version = Version.byName(args[0]);
         String dirName = IOHelper.verifyFileName(args[1]);
         Path assetDir = server.updatesDir.resolve(dirName);
 
@@ -69,7 +68,7 @@ public final class DownloadAssetCommand extends Command
         // Download required asset
         ASSET_URL_MASK = server.config.mirror + "assets/%s.zip";
         LogHelper.subInfo("Downloading asset, it may take some time");
-        unpack(new URL(String.format(ASSET_URL_MASK, IOHelper.urlEncode(version.name))), assetDir);
+        unpack(new URL(String.format(ASSET_URL_MASK, IOHelper.urlEncode(args[0]))), assetDir);
 
         // Finished
         server.syncUpdatesDir(Collections.singleton(dirName));
