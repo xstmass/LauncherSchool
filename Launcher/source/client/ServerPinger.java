@@ -29,7 +29,7 @@ public final class ServerPinger
 
     // Instance
     private final InetSocketAddress address;
-    private final Version version;
+    private final String version;
 
     // Cache
     private final Object cacheLock = new Object();
@@ -38,7 +38,7 @@ public final class ServerPinger
     private long cacheUntil = Long.MIN_VALUE;
 
     @LauncherAPI
-    public ServerPinger(InetSocketAddress address, Version version)
+    public ServerPinger(InetSocketAddress address, String version)
     {
         this.address = Objects.requireNonNull(address, "address");
         this.version = Objects.requireNonNull(version, "version");
@@ -100,7 +100,7 @@ public final class ServerPinger
             try (HInput input = new HInput(socket.getInputStream());
                  HOutput output = new HOutput(socket.getOutputStream()))
             {
-                return version.compareTo(Version.MC172) >= 0 ? modernPing(input, output) : legacyPing(input, output, version.compareTo(Version.MC164) >= 0);
+                return Version.compare(version, "1.7.2") >= 0 ? modernPing(input, output) : legacyPing(input, output, Version.compare(version, "1.6.4") >= 0);
             }
         }
     }
@@ -161,7 +161,7 @@ public final class ServerPinger
             throw new IOException("Protocol mismatch: " + protocol);
         }
         String clientVersion = splitted[2];
-        if (!clientVersion.equals(version.name))
+        if (!clientVersion.equals(version))
         {
             throw new IOException(String.format("Version mismatch: '%s'", clientVersion));
         }
