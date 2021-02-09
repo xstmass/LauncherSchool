@@ -95,7 +95,7 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     @LauncherAPI
     public FileNameMatcher getAssetUpdateMatcher()
     {
-        return Version.compare(getVersion(), "1.7.10") >= 0 ? ASSET_MATCHER : null;
+        return Version.compare(getVersion(), "1.7.3") >= 0 ? ASSET_MATCHER : null;
     }
 
     @LauncherAPI

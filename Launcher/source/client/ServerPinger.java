@@ -100,7 +100,7 @@ public final class ServerPinger
             try (HInput input = new HInput(socket.getInputStream());
                  HOutput output = new HOutput(socket.getOutputStream()))
             {
-                return Version.compare(version, "1.7.2") >= 0 ? modernPing(input, output) : legacyPing(input, output, Version.compare(version, "1.6.4") >= 0);
+                return Version.compare(version, "1.7") >= 0 ? modernPing(input, output) : legacyPing(input, output, Version.compare(version, "1.6") >= 0);
             }
         }
     }
