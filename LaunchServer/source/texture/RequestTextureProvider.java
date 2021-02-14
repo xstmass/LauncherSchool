@@ -40,7 +40,7 @@ public final class RequestTextureProvider extends TextureProvider
         }
         catch (FileNotFoundException ignored)
         {
-            LogHelper.subDebug("Texture not found :(");
+            if (LogHelper.isDebugEnabled()) LogHelper.subDebug("Texture not set or not found! Maybe problem with you proxy!");
             return null; // Simply not found
         }
     }

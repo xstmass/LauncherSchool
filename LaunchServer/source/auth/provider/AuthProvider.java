@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AuthProvider extends ConfigObject implements AutoCloseable
 {
-    private static final Map<String, Adapter<AuthProvider>> AUTH_PROVIDERS = new ConcurrentHashMap<>(8);
+    private static final Map<String, Adapter<AuthProvider>> AUTH_PROVIDERS = new ConcurrentHashMap<>(15);
 
     static
     {

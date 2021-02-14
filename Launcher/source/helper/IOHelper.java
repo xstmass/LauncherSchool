@@ -33,7 +33,7 @@ public final class IOHelper
     // Constants
     @LauncherAPI
     public static final int SOCKET_TIMEOUT = VerifyHelper.verifyInt(
-            Integer.parseInt(System.getProperty("launcher.socketTimeout", Integer.toString(30000))),
+            Integer.parseInt(System.getProperty("launcher.socketTimeout", Integer.toString(10000))),
             VerifyHelper.POSITIVE, "launcher.socketTimeout can't be <= 0");
     @LauncherAPI
     public static final int HTTP_TIMEOUT = VerifyHelper.verifyInt(
