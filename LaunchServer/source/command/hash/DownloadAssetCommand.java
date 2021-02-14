@@ -1,12 +1,13 @@
 package launchserver.command.hash;
 
-import launcher.client.ClientProfile.Version;
 import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
+import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.LaunchServer;
 import launchserver.command.Command;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,6 +43,31 @@ public final class DownloadAssetCommand extends Command
         }
     }
 
+    public static void downloadZip(String[] mirrors, String mask, Path dir) {
+        for (String mirror : mirrors) {
+            if (downloadZip(mirror + mask, dir)) return;
+        }
+        LogHelper.error("Error download %s. All mirrors return error", dir.getFileName().toString());
+    }
+
+    public static boolean downloadZip(String link, Path dir) {
+        URL url = null;
+        // Нам тут IDEA мозг ебет
+        try {
+            url = new URL(link);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        LogHelper.debug("Try download %s", url.toString());
+        try {
+            unpack(url, dir);
+        } catch (IOException e) {
+            LogHelper.error("Download %s failed (%s: %s)", url.toString(), e.getClass().getName(), e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String getArgsDescription()
     {
@@ -58,6 +84,7 @@ public final class DownloadAssetCommand extends Command
     public void invoke(String... args) throws Throwable
     {
         verifyArgs(args, 2);
+        String version = args[0];
         String dirName = IOHelper.verifyFileName(args[1]);
         Path assetDir = server.updatesDir.resolve(dirName);
 
@@ -66,9 +93,10 @@ public final class DownloadAssetCommand extends Command
         Files.createDirectory(assetDir);
 
         // Download required asset
-        ASSET_URL_MASK = server.config.mirror + "assets/%s.zip";
         LogHelper.subInfo("Downloading asset, it may take some time");
-        unpack(new URL(String.format(ASSET_URL_MASK, IOHelper.urlEncode(args[0]))), assetDir);
+        ASSET_URL_MASK = String.format("assets/%s.zip", version);
+        String[] mirrors = server.config.mirrors.stream(StringConfigEntry.class).toArray(String[]::new);
+        downloadZip(mirrors, ASSET_URL_MASK, assetDir);
 
         // Finished
         server.syncUpdatesDir(Collections.singleton(dirName));

@@ -53,9 +53,9 @@ public final class DownloadClientCommand extends Command
 
         // Download required client
         LogHelper.subInfo("Downloading client, it may take some time");
-        CLIENT_URL_MASK = server.config.mirror + "clients/%s.zip";
-        DownloadAssetCommand.unpack(new URL(String.format(CLIENT_URL_MASK,
-                IOHelper.urlEncode(args[0]))), clientDir);
+        CLIENT_URL_MASK = String.format("clients/%s.zip", version);
+        String[] mirrors = server.config.mirrors.stream(StringConfigEntry.class).toArray(String[]::new);
+        DownloadAssetCommand.downloadZip(mirrors, CLIENT_URL_MASK, clientDir);
 
         // Create profile file
         LogHelper.subInfo("Creaing profile file: '%s'", dirName);
@@ -72,7 +72,7 @@ public final class DownloadClientCommand extends Command
                 String modLoader = versionArgs[1];
 
                 if (Arrays.asList("forge", "fabric").contains(modLoader)) {
-                    profilePath = String.format("launchserver/defaults/profile%s.cfg", modLoader);
+                    profilePath = String.format("launchserver/defaults/profile-%s.cfg", modLoader);
                 } else {
                     profilePath = "launchserver/defaults/profile-default.cfg";
                 }

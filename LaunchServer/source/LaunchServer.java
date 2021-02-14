@@ -10,10 +10,7 @@ import launcher.helper.*;
 import launcher.serialize.config.ConfigObject;
 import launcher.serialize.config.TextConfigReader;
 import launcher.serialize.config.TextConfigWriter;
-import launcher.serialize.config.entry.BlockConfigEntry;
-import launcher.serialize.config.entry.BooleanConfigEntry;
-import launcher.serialize.config.entry.IntegerConfigEntry;
-import launcher.serialize.config.entry.StringConfigEntry;
+import launcher.serialize.config.entry.*;
 import launcher.serialize.signed.SignedObjectHolder;
 import launchserver.auth.AuthException;
 import launchserver.auth.AuthLimiter;
@@ -562,9 +559,9 @@ public final class LaunchServer implements Runnable, AutoCloseable
         @LauncherAPI
         public final String authRejectString;
 
-        // Mirror
+        // Mirrors
         @LauncherAPI
-        public final String mirror;
+        public final ListConfigEntry mirrors;
 
         // Update
         @LauncherAPI
@@ -597,7 +594,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
             authRateLimitMilis = VerifyHelper.verifyInt(block.getEntryValue("authRateLimitMilis", IntegerConfigEntry.class),
                     VerifyHelper.range(10, 10000000), "Illegal authRateLimitMillis");
             authRejectString = block.hasEntry("authRejectString") ?
-                    block.getEntryValue("authRejectString", StringConfigEntry.class) : "Вы превысили лимит авторизаций. Подождите некоторое время перед повторной попыткой";
+                    block.getEntryValue("authRejectString", StringConfigEntry.class) : "Превышен лимит авторизаций. Подождите некоторое время перед повторной попыткой";
 
             // Set handlers & providers
             authHandler = AuthHandler.newHandler(block.getEntryValue("authHandler", StringConfigEntry.class),
@@ -610,8 +607,8 @@ public final class LaunchServer implements Runnable, AutoCloseable
             // Check Update
             checkServerUpdate = block.getEntryValue("checkServerUpdate", BooleanConfigEntry.class);
 
-            // Mirror
-            mirror = block.getEntryValue("mirror", StringConfigEntry.class);
+            // Mirrors
+            mirrors = block.getEntry("mirrors", ListConfigEntry.class);
 
             // Set misc config
             launch4J = new ExeConf(block.getEntry("launch4J", BlockConfigEntry.class));
