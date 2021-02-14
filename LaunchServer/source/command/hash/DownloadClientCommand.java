@@ -86,6 +86,8 @@ public final class DownloadClientCommand extends Command
             client = new ClientProfile(TextConfigReader.read(reader, false));
         }
         client.setTitle(dirName);
+        client.setVersion(version);
+        client.setAssetIndex(version);
         client.block.getEntry("dir", StringConfigEntry.class).setValue(dirName);
         try (BufferedWriter writer = IOHelper.newWriter(IOHelper.resolveIncremental(server.profilesDir,
                 dirName, "cfg")))

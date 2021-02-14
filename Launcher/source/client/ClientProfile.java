@@ -168,6 +168,18 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     }
 
     @LauncherAPI
+    public void setVersion(String version)
+    {
+        this.version.setValue(version);
+    }
+
+    @LauncherAPI
+    public void setAssetIndex(String version)
+    {
+        this.assetIndex.setValue(version);
+    }
+
+    @LauncherAPI
     public String getVersion() { return version.getValue(); }
 
     @LauncherAPI
