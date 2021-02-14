@@ -99,5 +99,6 @@ public final class DownloadClientCommand extends Command
         server.syncProfilesDir();
         server.syncUpdatesDir(Collections.singleton(dirName));
         LogHelper.subInfo("Client successfully downloaded: '%s'", dirName);
+        LogHelper.subInfo("DON'T FORGET! Set up the assets directory!");
     }
 }
