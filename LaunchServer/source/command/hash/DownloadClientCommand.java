@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 
 public final class DownloadClientCommand extends Command
@@ -42,6 +43,7 @@ public final class DownloadClientCommand extends Command
     public void invoke(String... args) throws Throwable
     {
         verifyArgs(args, 2);
+        String version = args[0];
         String dirName = IOHelper.verifyFileName(args[1]);
         Path clientDir = server.updatesDir.resolve(args[1]);
 
@@ -58,7 +60,27 @@ public final class DownloadClientCommand extends Command
         // Create profile file
         LogHelper.subInfo("Creaing profile file: '%s'", dirName);
         ClientProfile client;
-        String profilePath = String.format("launchserver/defaults/profile%s.cfg", args[0]);
+        String profilePath;
+
+        // Я бы выпилил это вообще нахуй, но дефолтные конфиги нужны! (Товарищи, партия требует дефолтые конфиги!!!)
+        if (Version.compare(version, "1.6.4") <= 0) {
+            profilePath = "launchserver/defaults/profile-legacy.cfg";
+        } else {
+            if (version.contains("-")) {
+                String[] versionArgs = version.split("-");
+                version = versionArgs[0];
+                String modLoader = versionArgs[1];
+
+                if (Arrays.asList("forge", "fabric").contains(modLoader)) {
+                    profilePath = String.format("launchserver/defaults/profile%s.cfg", modLoader);
+                } else {
+                    profilePath = "launchserver/defaults/profile-default.cfg";
+                }
+            } else {
+                profilePath = "launchserver/defaults/profile-default.cfg";
+            }
+        }
+
         try (BufferedReader reader = IOHelper.newReader(IOHelper.getResourceURL(profilePath)))
         {
             client = new ClientProfile(TextConfigReader.read(reader, false));
