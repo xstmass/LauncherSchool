@@ -4,7 +4,6 @@ import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
@@ -30,21 +29,7 @@ public class UnzipHelper {
         }
     }
 
-    public static void downloadZip(String[] mirrors, String mask, Path dir) {
-        for (String mirror : mirrors) {
-            if (downloadZip(mirror + mask, dir)) return;
-        }
-        LogHelper.error("Error download %s. All mirrors return error", dir.getFileName().toString());
-    }
-
-    private static boolean downloadZip(String link, Path dir) {
-        URL url = null;
-        // Нам тут IDEA мозг ебет
-        try {
-            url = new URL(link);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+    public static boolean downloadZip(URL url, Path dir) {
         LogHelper.debug("Try download %s", url.toString());
         try {
             unpack(url, dir);
@@ -54,5 +39,4 @@ public class UnzipHelper {
         }
         return true;
     }
-
 }
