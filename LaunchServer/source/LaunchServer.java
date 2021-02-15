@@ -29,6 +29,7 @@ import launchserver.command.CommandException;
 import launchserver.command.handler.CommandHandler;
 import launchserver.command.handler.JLineCommandHandler;
 import launchserver.command.handler.StdCommandHandler;
+import launchserver.helpers.HTTPRequestHelper;
 import launchserver.response.Response;
 import launchserver.response.Response.Factory;
 import launchserver.response.ServerSocketHandler;
@@ -39,11 +40,9 @@ import javax.script.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.KeyPair;
@@ -191,12 +190,8 @@ public final class LaunchServer implements Runnable, AutoCloseable
             LogHelper.info("Check updates from KeeperJerry...");
             try
             {
-                URL url;
-                url = new URL("https://launcher-sashok724.keeperjerry.ru/versions.json");
-                URLConnection conn = url.openConnection();
-                BufferedReader getStatus = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-                JsonObject object = Json.parse(getStatus.readLine()).asObject();
+                String file = HTTPRequestHelper.getFile("https://launcher-sashok724.keeperjerry.ru/versions.json");
+                JsonObject object = Json.parse(file).asObject();
                 String version = object.get("version").asString();
                 String date = object.get("date").asString();
                 String note = object.get("note").asString();
@@ -209,7 +204,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
                 {
                     LogHelper.info("================================");
                     LogHelper.info("FOUND NEW VERSION: " + version);
-                    LogHelper.info("Relese data: " + date);
+                    LogHelper.info("Release data: " + date);
                     LogHelper.info("Note: " + note);
                     LogHelper.info("================================");
                 }
