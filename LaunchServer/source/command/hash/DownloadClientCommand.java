@@ -9,10 +9,10 @@ import launcher.serialize.config.TextConfigWriter;
 import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.LaunchServer;
 import launchserver.command.Command;
+import launchserver.helpers.UnzipHelper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -20,8 +20,6 @@ import java.util.Collections;
 
 public final class DownloadClientCommand extends Command
 {
-    private static String CLIENT_URL_MASK;
-
     public DownloadClientCommand(LaunchServer server)
     {
         super(server);
@@ -53,12 +51,12 @@ public final class DownloadClientCommand extends Command
 
         // Download required client
         LogHelper.subInfo("Downloading client, it may take some time");
-        CLIENT_URL_MASK = String.format("clients/%s.zip", version);
         String[] mirrors = server.config.mirrors.stream(StringConfigEntry.class).toArray(String[]::new);
-        DownloadAssetCommand.downloadZip(mirrors, CLIENT_URL_MASK, clientDir);
+        String clientMask = String.format("clients/%s.zip", version);
+        UnzipHelper.downloadZip(mirrors, clientMask, clientDir);
 
         // Create profile file
-        LogHelper.subInfo("Creaing profile file: '%s'", dirName);
+        LogHelper.subInfo("Creating profile file: '%s'", dirName);
         ClientProfile client;
         String profilePath;
 

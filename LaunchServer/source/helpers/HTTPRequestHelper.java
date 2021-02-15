@@ -16,11 +16,7 @@ public class HTTPRequestHelper {
     public static boolean fileExsist(String url) throws IOException {
         HttpURLConnection request = makeRequest(url, "HEAD");
         int responseCode = request.getResponseCode();
-        if (responseCode >= 200 && responseCode < 300) {
-            return true;
-        } else {
-            return false;
-        }
+        return responseCode >= 200 && responseCode < 300;
     }
 
     public static String getFile(String url) throws IOException {
