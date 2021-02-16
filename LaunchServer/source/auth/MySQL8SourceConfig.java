@@ -55,9 +55,9 @@ public final class MySQL8SourceConfig extends ConfigObject implements AutoClosea
         password = block.getEntryValue("password", StringConfigEntry.class);
         database = VerifyHelper.verify(block.getEntryValue("database", StringConfigEntry.class),
                 VerifyHelper.NOT_EMPTY, "MySQL database can't be empty");
-        timeZone = block.hasEntry("timezone") ?  VerifyHelper.verify(block.getEntryValue("timezone", StringConfigEntry.class),
+        timeZone = block.hasEntry("timezone") ? VerifyHelper.verify(block.getEntryValue("timezone", StringConfigEntry.class),
                 VerifyHelper.NOT_EMPTY, "MySQL time zone can't be empty") : null;
-        useSSL = block.hasEntry("useSSL") ?  block.getEntryValue("timezone", BooleanConfigEntry.class) : true;
+        useSSL = block.hasEntry("useSSL") ? block.getEntryValue("useSSL", BooleanConfigEntry.class) : true;
 
         // Password shouldn't be verified
     }
