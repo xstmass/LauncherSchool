@@ -42,11 +42,13 @@ public final class DownloadClientCommand extends Command
     {
         verifyArgs(args, 2);
         String version = args[0];
+        String fullVersion = args[0];
+        if (version.contains("-")) version = version.split("-")[0];
         String dirName = IOHelper.verifyFileName(args[1]);
         Path clientDir = server.updatesDir.resolve(args[1]);
         String[] mirrors = server.config.mirrors.stream(StringConfigEntry.class).toArray(String[]::new);
-        String clientMask = String.format("clients/%s.zip", version);
-        String profileMask = String.format("clients/%s.cfg", version);
+        String clientMask = String.format("clients/%s.zip", fullVersion);
+        String profileMask = String.format("clients/%s.cfg", fullVersion);
 
         for (String mirror : mirrors)
         {
