@@ -55,21 +55,18 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
 
     public static void fillTextureProperties(GameProfile profile, PlayerProfile pp) {
         LogHelper.debug("fillTextureProperties, Username: '%s'", profile.getName());
-        if (NO_TEXTURES)
-        {
+        if (NO_TEXTURES) {
             return;
         }
 
         // Fill textures map
         PropertyMap properties = profile.getProperties();
-        if (pp.skin != null)
-        {
+        if (pp.skin != null) {
             properties.put(ClientLauncher.SKIN_URL_PROPERTY, new Property(ClientLauncher.SKIN_URL_PROPERTY, pp.skin.url, ""));
             properties.put(ClientLauncher.SKIN_DIGEST_PROPERTY, new Property(ClientLauncher.SKIN_DIGEST_PROPERTY, SecurityHelper.toHex(pp.skin.digest), ""));
             LogHelper.debug("fillTextureProperties, Has skin texture for username '%s'", profile.getName());
         }
-        if (pp.cloak != null)
-        {
+        if (pp.cloak != null) {
             properties.put(ClientLauncher.CLOAK_URL_PROPERTY, new Property(ClientLauncher.CLOAK_URL_PROPERTY, pp.cloak.url, ""));
             properties.put(ClientLauncher.CLOAK_DIGEST_PROPERTY, new Property(ClientLauncher.CLOAK_DIGEST_PROPERTY, SecurityHelper.toHex(pp.cloak.digest), ""));
             LogHelper.debug("fillTextureProperties, Has cloak texture for username '%s'", profile.getName());
@@ -85,33 +82,27 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
     private static void getTexturesMojang(Map<Type, MinecraftProfileTexture> textures, String texturesBase64, GameProfile profile) {
         // Decode textures payload
         JsonObject texturesJSON;
-        try
-        {
+        try {
             byte[] asBytes = Base64.getDecoder().decode(texturesBase64);
             String asString = new String(asBytes, IOHelper.UNICODE_CHARSET);
             texturesJSON = JSON_PARSER.parse(asString).getAsJsonObject().getAsJsonObject("textures");
         }
-        catch (Throwable ignored)
-        {
+        catch (Throwable ignored) {
             LogHelper.error("Could not decode textures payload, Username: '%s', UUID: '%s'", profile.getName(), profile.getUUID());
             return;
         }
 
         // Fetch textures from textures JSON
-        for (Type type : MinecraftProfileTexture.PROFILE_TEXTURE_TYPES)
-        {
-            if (textures.containsKey(type))
-            {
+        for (Type type : MinecraftProfileTexture.PROFILE_TEXTURE_TYPES) {
+            if (textures.containsKey(type)) {
                 continue; // Overriden by launcher
             }
 
             // Get texture from JSON
             JsonElement textureJSON = texturesJSON.get(type.name());
-            if (textureJSON != null && textureJSON.isJsonObject())
-            {
+            if (textureJSON != null && textureJSON.isJsonObject()) {
                 JsonElement urlValue = textureJSON.getAsJsonObject().get("url");
-                if (urlValue.isJsonPrimitive())
-                {
+                if (urlValue.isJsonPrimitive()) {
                     textures.put(type, new MinecraftProfileTexture(urlValue.getAsString()));
                 }
             }
