@@ -14,26 +14,19 @@ import java.util.UUID;
 
 // Used to bypass Launcher's class name obfuscation and access API
 @LauncherAPI
-public final class CompatBridge
-{
+public class CompatBridge {
     public static final int PROFILES_MAX_BATCH_SIZE = BatchProfileByUsernameRequest.MAX_BATCH_SIZE;
 
-    private CompatBridge()
-    {
-    }
+    private CompatBridge() { }
 
     @SuppressWarnings("unused")
-    public static CompatProfile checkServer(String username, String serverID) throws Throwable
-    {
+    public static CompatProfile checkServer(String username, String serverID) throws Throwable {
         LogHelper.debug("CompatBridge.checkServer, Username: '%s', Server ID: %s", username, serverID);
-        return CompatProfile.fromPlayerProfile(new CheckServerRequest(username, serverID).request());
-    }
+        return CompatProfile.fromPlayerProfile(new CheckServerRequest(username, serverID).request()); }
 
     @SuppressWarnings("unused")
-    public static boolean joinServer(String username, String accessToken, String serverID) throws Throwable
-    {
-        if (!ClientLauncher.isLaunched())
-        {
+    public static boolean joinServer(String username, String accessToken, String serverID) throws Throwable {
+        if (!ClientLauncher.isLaunched()) {
             throw new IllegalStateException("Bad Login (Cheater)");
         }
 
@@ -43,26 +36,22 @@ public final class CompatBridge
     }
 
     @SuppressWarnings("unused")
-    public static CompatProfile profileByUUID(UUID uuid) throws Throwable
-    {
+    public static CompatProfile profileByUUID(UUID uuid) throws Throwable {
         return CompatProfile.fromPlayerProfile(new ProfileByUUIDRequest(uuid).request());
     }
 
     @SuppressWarnings("unused")
-    public static CompatProfile profileByUsername(String username) throws Throwable
-    {
+    public static CompatProfile profileByUsername(String username) throws Throwable {
         return CompatProfile.fromPlayerProfile(new ProfileByUsernameRequest(username).request());
     }
 
     @SuppressWarnings("unused")
-    public static CompatProfile[] profilesByUsername(String... usernames) throws Throwable
-    {
+    public static CompatProfile[] profilesByUsername(String... usernames) throws Throwable {
         PlayerProfile[] profiles = new BatchProfileByUsernameRequest(usernames).request();
 
         // Convert profiles
         CompatProfile[] resultProfiles = new CompatProfile[profiles.length];
-        for (int i = 0; i < profiles.length; i++)
-        {
+        for (int i = 0; i < profiles.length; i++) {
             resultProfiles[i] = CompatProfile.fromPlayerProfile(profiles[i]);
         }
 

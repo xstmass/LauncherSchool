@@ -5,8 +5,7 @@ import com.mojang.authlib.*;
 import com.mojang.authlib.exceptions.*;
 import java.util.*;
 
-public class YggdrasilSocialInteractionsService implements SocialInteractionsService
-{
+public class YggdrasilSocialInteractionsService implements SocialInteractionsService {
     public YggdrasilSocialInteractionsService(final YggdrasilAuthenticationService authenticationService, final String accessToken, final Environment env) throws AuthenticationException {
     }
 

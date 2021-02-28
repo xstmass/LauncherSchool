@@ -29,13 +29,21 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionService
-{
+public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionService {
     public static final JsonParser JSON_PARSER = new JsonParser();
     public static final boolean NO_TEXTURES = Boolean.parseBoolean("launcher.authlib.noTextures");
 
-    public YggdrasilMinecraftSessionService(AuthenticationService service)
-    {
+    public YggdrasilMinecraftSessionService(AuthenticationService service) {
+        super(service);
+        LogHelper.debug("Patched MinecraftSessionService created");
+    }
+
+    public YggdrasilMinecraftSessionService(YggdrasilAuthenticationService service) {
+        super(service);
+        LogHelper.debug("Patched MinecraftSessionService created");
+    }
+
+    public YggdrasilMinecraftSessionService(YggdrasilAuthenticationService service, Environment environment) {
         super(service);
         LogHelper.debug("Patched MinecraftSessionService created");
     }
@@ -45,8 +53,7 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
         LogHelper.debug("Patched MinecraftSessionService created");
     }
 
-    public static void fillTextureProperties(GameProfile profile, PlayerProfile pp)
-    {
+    public static void fillTextureProperties(GameProfile profile, PlayerProfile pp) {
         LogHelper.debug("fillTextureProperties, Username: '%s'", profile.getName());
         if (NO_TEXTURES)
         {
@@ -69,15 +76,13 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
         }
     }
 
-    public static GameProfile toGameProfile(PlayerProfile pp)
-    {
+    public static GameProfile toGameProfile(PlayerProfile pp) {
         GameProfile profile = new GameProfile(pp.uuid, pp.username);
         fillTextureProperties(profile, pp);
         return profile;
     }
 
-    private static void getTexturesMojang(Map<Type, MinecraftProfileTexture> textures, String texturesBase64, GameProfile profile)
-    {
+    private static void getTexturesMojang(Map<Type, MinecraftProfileTexture> textures, String texturesBase64, GameProfile profile) {
         // Decode textures payload
         JsonObject texturesJSON;
         try
@@ -114,31 +119,26 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
     }
 
     @Override
-    public GameProfile fillProfileProperties(GameProfile profile, boolean requireSecure)
-    {
+    public GameProfile fillProfileProperties(GameProfile profile, boolean requireSecure) {
         // Verify has UUID
         UUID uuid = profile.getUUID();
         LogHelper.debug("fillProfileProperties, UUID: %s", uuid);
-        if (uuid == null)
-        {
+        if (uuid == null) {
             return profile;
         }
 
         // Make profile request
         PlayerProfile pp;
-        try
-        {
+        try {
             pp = new ProfileByUUIDRequest(uuid).request();
         }
-        catch (Throwable exc)
-        {
+        catch (Throwable exc) {
             LogHelper.debug("Couldn't fetch profile properties for '%s': %s", profile, exc);
             return profile;
         }
 
         // Verify is found
-        if (pp == null)
-        {
+        if (pp == null) {
             LogHelper.debug("Couldn't fetch profile properties for '%s' as the profile does not exist", profile);
             return profile;
         }
@@ -150,36 +150,30 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
     }
 
     @Override
-    public Map<Type, MinecraftProfileTexture> getTextures(GameProfile profile, boolean requireSecure)
-    {
+    public Map<Type, MinecraftProfileTexture> getTextures(GameProfile profile, boolean requireSecure) {
         LogHelper.debug("getTextures, Username: '%s', UUID: '%s'", profile.getName(), profile.getUUID());
         Map<Type, MinecraftProfileTexture> textures = new EnumMap<>(Type.class);
 
         // Add textures
-        if (!NO_TEXTURES)
-        {
+        if (!NO_TEXTURES) {
             // Add skin URL to textures map
             Property skinURL = Iterables.getFirst(profile.getProperties().get(ClientLauncher.SKIN_URL_PROPERTY), null);
             Property skinDigest = Iterables.getFirst(profile.getProperties().get(ClientLauncher.SKIN_DIGEST_PROPERTY), null);
-            if (skinURL != null && skinDigest != null)
-            {
+            if (skinURL != null && skinDigest != null) {
                 textures.put(Type.SKIN, new MinecraftProfileTexture(skinURL.getValue(), skinDigest.getValue()));
             }
 
             // Add cloak URL to textures map
             Property cloakURL = Iterables.getFirst(profile.getProperties().get(ClientLauncher.CLOAK_URL_PROPERTY), null);
             Property cloakDigest = Iterables.getFirst(profile.getProperties().get(ClientLauncher.CLOAK_DIGEST_PROPERTY), null);
-            if (cloakURL != null && cloakDigest != null)
-            {
+            if (cloakURL != null && cloakDigest != null) {
                 textures.put(Type.CAPE, new MinecraftProfileTexture(cloakURL.getValue(), cloakDigest.getValue()));
             }
 
             // Try to find missing textures in textures payload (now always true because launcher is not passing elytra skins)
-            if (textures.size() != MinecraftProfileTexture.PROFILE_TEXTURE_COUNT)
-            {
+            if (textures.size() != MinecraftProfileTexture.PROFILE_TEXTURE_COUNT) {
                 Property texturesMojang = Iterables.getFirst(profile.getProperties().get("textures"), null);
-                if (texturesMojang != null)
-                {
+                if (texturesMojang != null) {
                     getTexturesMojang(textures, texturesMojang.getValue(), profile);
                 }
             }
@@ -190,19 +184,16 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
     }
 
     @Override
-    public GameProfile hasJoinedServer(GameProfile profile, String serverID) throws AuthenticationUnavailableException
-    {
+    public GameProfile hasJoinedServer(GameProfile profile, String serverID) throws AuthenticationUnavailableException {
         String username = profile.getName();
         LogHelper.debug("checkServer, Username: '%s', Server ID: %s", username, serverID);
 
         // Make checkServer request
         PlayerProfile pp;
-        try
-        {
+        try {
             pp = new CheckServerRequest(username, serverID).request();
         }
-        catch (Throwable exc)
-        {
+        catch (Throwable exc) {
             LogHelper.error(exc);
             throw new AuthenticationUnavailableException(exc);
         }
@@ -212,16 +203,13 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
     }
 
     @Override
-    public GameProfile hasJoinedServer(GameProfile profile, String serverID, InetAddress address) throws AuthenticationUnavailableException
-    {
+    public GameProfile hasJoinedServer(GameProfile profile, String serverID, InetAddress address) throws AuthenticationUnavailableException {
         return hasJoinedServer(profile, serverID);
     }
 
     @Override
-    public void joinServer(GameProfile profile, String accessToken, String serverID) throws AuthenticationException
-    {
-        if (!ClientLauncher.isLaunched())
-        {
+    public void joinServer(GameProfile profile, String accessToken, String serverID) throws AuthenticationException {
+        if (!ClientLauncher.isLaunched()) {
             throw new AuthenticationException("Bad Login (Cheater)");
         }
 
@@ -231,18 +219,15 @@ public class YggdrasilMinecraftSessionService extends BaseMinecraftSessionServic
 
         // Make joinServer request
         boolean success;
-        try
-        {
+        try {
             success = new JoinServerRequest(username, accessToken, serverID).request();
         }
-        catch (Throwable exc)
-        {
+        catch (Throwable exc) {
             throw new AuthenticationUnavailableException(exc);
         }
 
         // Verify is success
-        if (!success)
-        {
+        if (!success) {
             throw new AuthenticationException("Bad Login (Clientside)");
         }
     }
