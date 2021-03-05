@@ -34,24 +34,19 @@ public class YggdrasilGameProfileRepository implements GameProfileRepository {
     }
 
     @Override
-    public void findProfilesByNames(String[] usernames, Agent agent, ProfileLookupCallback callback)
-    {
+    public void findProfilesByNames(String[] usernames, Agent agent, ProfileLookupCallback callback) {
         int offset = 0;
-        while (offset < usernames.length)
-        {
+        while (offset < usernames.length) {
             String[] sliceUsernames = Arrays.copyOfRange(usernames, offset, Math.min(offset + BatchProfileByUsernameRequest.MAX_BATCH_SIZE, usernames.length));
             offset += BatchProfileByUsernameRequest.MAX_BATCH_SIZE;
 
             // Batch Username-To-UUID request
             PlayerProfile[] sliceProfiles;
-            try
-            {
+            try {
                 sliceProfiles = new BatchProfileByUsernameRequest(sliceUsernames).request();
             }
-            catch (Throwable exc)
-            {
-                for (String username : sliceUsernames)
-                {
+            catch (Throwable exc) {
+                for (String username : sliceUsernames) {
                     LogHelper.debug("Couldn't find profile '%s': %s", username, exc);
                     callback.onProfileLookupFailed(new GameProfile((UUID) null, username), exc instanceof Exception ? (Exception) exc : new Exception(exc));
                 }
@@ -62,11 +57,9 @@ public class YggdrasilGameProfileRepository implements GameProfileRepository {
             }
 
             // Request succeeded!
-            for (int i = 0; i < sliceProfiles.length; i++)
-            {
+            for (int i = 0; i < sliceProfiles.length; i++) {
                 PlayerProfile pp = sliceProfiles[i];
-                if (pp == null)
-                {
+                if (pp == null) {
                     String username = sliceUsernames[i];
                     LogHelper.debug("Couldn't find profile '%s'", username);
                     callback.onProfileLookupFailed(new GameProfile((UUID) null, username), new ProfileNotFoundException("Server did not find the requested profile"));

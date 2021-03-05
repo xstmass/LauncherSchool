@@ -7,8 +7,7 @@ import launcher.helper.LogHelper;
 
 import java.net.Proxy;
 
-public class YggdrasilAuthenticationService implements AuthenticationService
-{
+public class YggdrasilAuthenticationService implements AuthenticationService {
     private final Environment environment;
 
     public YggdrasilAuthenticationService(final Proxy proxy) {
