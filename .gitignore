@@ -1,4 +1,5 @@
-.idea
+#.idea
+.idea/vcs.xml
 !.idea/artifacts/*
 !.idea/libraries/*
 !.idea/compiler.xml
