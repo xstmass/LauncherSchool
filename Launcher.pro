@@ -2,7 +2,7 @@
 -outjars 'Launcher-obf.jar'
 -libraryjars 'build/libraries/gson-2.8.0.jar'
 -libraryjars 'build/libraries/guava-17.0.jar'
--libraryjars 'build/libraries/jansi-1.11.jar'
+-libraryjars 'build/libraries/jansi-1.18.jar'
 -libraryjars 'build/libraries/log4j-api-2.8.1.jar'
 -libraryjars 'build/libraries/log4j-core-2.8.1.jar'
 -libraryjars '<java.home>/lib/rt.jar'
