@@ -1,11 +1,14 @@
 package launchserver.command.handler;
 
 import jline.console.ConsoleReader;
+import jline.console.completer.Completer;
 import launcher.helper.LogHelper;
 import launcher.helper.LogHelper.Output;
 import launchserver.LaunchServer;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 public final class JLineCommandHandler extends CommandHandler
 {
@@ -18,6 +21,7 @@ public final class JLineCommandHandler extends CommandHandler
         // Set reader
         reader = new ConsoleReader();
         reader.setExpandEvents(false);
+        reader.addCompleter(new JLineConsoleCompleter());
 
         // Replace writer
         LogHelper.removeStdOutput();
@@ -57,6 +61,21 @@ public final class JLineCommandHandler extends CommandHandler
             {
                 // Ignored
             }
+        }
+    }
+
+    public class JLineConsoleCompleter implements Completer
+    {
+        @Override
+        public int complete(String line, int pos, List<CharSequence> list)
+        {
+            if (pos == 0) {
+                list.addAll(commandsMap().keySet());
+            } else {
+                Optional<String> command = commandsMap().keySet().stream().filter(c -> c.startsWith(line)).findFirst();
+                command.ifPresent(list::add);
+            }
+            return 0;
         }
     }
 }
