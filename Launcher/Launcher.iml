@@ -36,7 +36,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" scope="PROVIDED" name="jansi-1.11" level="project" />
-    <orderEntry type="library" exported="" name="minimal-json-0.9.4" level="project" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="minimal-json-0.9.5" level="project" />
   </component>
 </module>
