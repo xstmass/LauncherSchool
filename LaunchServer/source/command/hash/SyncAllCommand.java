@@ -35,5 +35,9 @@ public class SyncAllCommand extends Command
 
         server.syncUpdatesDir(null);
         LogHelper.subInfo("Updates dir successfully resynced");
+
+        server.syncLauncherBinaries();
+        LogHelper.subInfo("Binaries successfully resynced");
+        LogHelper.subInfo("All services resynced!");
     }
 }
