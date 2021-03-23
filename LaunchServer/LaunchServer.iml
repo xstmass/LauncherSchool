@@ -95,7 +95,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" scope="PROVIDED" name="jline-2.12.1" level="project" />
-    <orderEntry type="library" exported="" scope="PROVIDED" name="hikaricp-2.4.0" level="project" />
+    <orderEntry type="library" exported="" scope="PROVIDED" name="hikaricp-4.0.3" level="project" />
     <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
