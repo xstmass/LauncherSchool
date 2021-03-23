@@ -152,6 +152,7 @@ public abstract class CommandHandler implements Runnable
         try
         {
             args = parse(line);
+            if(args.length > 0) args[0] = args[0].toLowerCase();
         }
         catch (Throwable exc)
         {
@@ -212,8 +213,8 @@ public abstract class CommandHandler implements Runnable
     public final void registerCommand(String name, Command command)
     {
         VerifyHelper.verifyIDName(name);
-        VerifyHelper.putIfAbsent(commands, name, Objects.requireNonNull(command, "command"),
-                String.format("Command has been already registered: '%s'", name));
+        VerifyHelper.putIfAbsent(commands, name.toLowerCase(), Objects.requireNonNull(command, "command"),
+                String.format("Command has been already registered: '%s'", name.toLowerCase()));
     }
 
     private void readLoop() throws IOException

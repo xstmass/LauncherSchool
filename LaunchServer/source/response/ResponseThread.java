@@ -99,7 +99,7 @@ public final class ResponseThread implements Runnable
             if (magicNumber != Launcher.PROTOCOL_MAGIC - 1)
             { // Previous launcher protocol
                 output.writeBoolean(false);
-                throw new IOException(String.format("#%d Protocol magic mismatch", id));
+                if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Protocol magic mismatch", id));
             }
             legacy = true;
         }
@@ -109,7 +109,7 @@ public final class ResponseThread implements Runnable
         if (!keyModulus.equals(server.privateKey.getModulus()))
         {
             output.writeBoolean(false);
-            throw new IOException(String.format("#%d Key modulus mismatch", id));
+            if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Key modulus mismatch", id));
         }
 
         // Read request type
@@ -117,7 +117,7 @@ public final class ResponseThread implements Runnable
         if (legacy && type != Type.LAUNCHER)
         {
             output.writeBoolean(false);
-            throw new IOException(String.format("#%d Not LAUNCHER request on legacy protocol", id));
+            if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Not LAUNCHER request on legacy protocol", id));
         }
         if (!server.serverSocketHandler.onHandshake(id, type))
         {
