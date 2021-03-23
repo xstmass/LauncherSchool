@@ -72,8 +72,7 @@ public final class JLineCommandHandler extends CommandHandler
             if (pos == 0) {
                 list.addAll(commandsMap().keySet());
             } else {
-                Optional<String> command = commandsMap().keySet().stream().filter(c -> c.startsWith(line)).findFirst();
-                command.ifPresent(list::add);
+                commandsMap().keySet().stream().filter(c -> c.startsWith(line)).findFirst().ifPresent(list::add);
             }
             return 0;
         }
