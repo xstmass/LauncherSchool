@@ -66,6 +66,7 @@ public final class PostgreSQLSourceConfig extends ConfigObject implements AutoCl
     }
 
     @LauncherAPI
+    @SuppressWarnings("deprecation") // Временный фикс Warnings
     public synchronized Connection getConnection() throws SQLException {
         if (source == null) { // New data source
             PGSimpleDataSource postgresqlSource = new PGSimpleDataSource();
@@ -73,6 +74,9 @@ public final class PostgreSQLSourceConfig extends ConfigObject implements AutoCl
             // Set credentials
             postgresqlSource.setServerName(address);
             postgresqlSource.setPortNumber(port);
+            // TODO: Нужно переделать под несколько серверов:
+            //postgresqlSource.setServerNames(address);
+            //postgresqlSource.setPortNumbers(port);
             postgresqlSource.setUser(username);
             postgresqlSource.setPassword(password);
             postgresqlSource.setDatabaseName(database);
