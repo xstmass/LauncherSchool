@@ -1,6 +1,6 @@
 // ====== LAUNCHER CONFIG ====== //
 var config = {
-    dir: "kj-launcher", // Launcher directory
+    dir: ".kj-launcher", // Launcher directory
     title: "KeeperJerry's Launcher", // Window title
     icons: [ "favicon.png" ], // Window icon paths
 
@@ -16,9 +16,9 @@ var config = {
     ramDefault: 1024, // Default RAM amount (0 for auto)
 
     // Custom JRE config (!!! DON'T CHANGE !!!)
-    jvmMustdie32Dir: "jre-8u131-win32", jvmMustdie64Dir: "jre-8u131-win64",
-    jvmLinux32Dir: "jre-8u131-linux32", jvmLinux64Dir: "jre-8u131-linux64",
-    jvmMacOSXDir: "jre-8u131-macosx", jvmUnknownDir: "jre-8u131-unknown"
+    jvmMustdie32Dir: "jre-8u282-win32", jvmMustdie64Dir: "jre-8u282-win64",
+    jvmLinux32Dir: "jre-8u282-linux32", jvmLinux64Dir: "jre-8u282-linux64",
+    jvmMacOSXDir: "jre-8u282-macosx", jvmUnknownDir: "jre-8u282-unknown"
 };
 
 // ====== DON'T TOUCH! ====== //
