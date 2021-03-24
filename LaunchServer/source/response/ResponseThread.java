@@ -76,7 +76,7 @@ public final class ResponseThread implements Runnable
         catch (Throwable exc)
         {
             savedError = exc;
-            LogHelper.error(exc);
+            if (LogHelper.isDebugEnabled()) LogHelper.error(exc);
         }
         finally
         {
@@ -100,6 +100,7 @@ public final class ResponseThread implements Runnable
             { // Previous launcher protocol
                 output.writeBoolean(false);
                 if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Protocol magic mismatch", id));
+                return null;
             }
             legacy = true;
         }
@@ -110,6 +111,7 @@ public final class ResponseThread implements Runnable
         {
             output.writeBoolean(false);
             if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Key modulus mismatch", id));
+            return null;
         }
 
         // Read request type
@@ -118,6 +120,7 @@ public final class ResponseThread implements Runnable
         {
             output.writeBoolean(false);
             if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Not LAUNCHER request on legacy protocol", id));
+            return null;
         }
         if (!server.serverSocketHandler.onHandshake(id, type))
         {
