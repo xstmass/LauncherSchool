@@ -229,7 +229,6 @@ public final class Launcher
         LogHelper.printVersion("Launcher");
 
         // Start Launcher
-        long start = System.currentTimeMillis();
         try
         {
             new Launcher().start(args);
@@ -239,8 +238,6 @@ public final class Launcher
             LogHelper.error(exc);
             return;
         }
-        long end = System.currentTimeMillis();
-        LogHelper.debug("Launcher started in %dms", end - start);
     }
 
     private static String readBuildNumber()
