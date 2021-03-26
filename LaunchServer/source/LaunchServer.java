@@ -512,7 +512,12 @@ public final class LaunchServer implements Runnable, AutoCloseable
         else
         {
             LogHelper.println("LaunchServer address: ");
-            newConfig.setAddress(commandHandler.readLine());
+            String host = commandHandler.readLine();
+            if (host.replaceAll(" ", "").isEmpty()) {
+                host = "localhost";
+                LogHelper.info("Host is not entered, localhost is used");
+            }
+            newConfig.setAddress(host);
         }
 
         // Write LaunchServer config
