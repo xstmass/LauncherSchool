@@ -12,9 +12,9 @@ import java.util.Set;
 
 public final class UpdateListResponse extends Response
 {
-    public UpdateListResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public UpdateListResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     @Override

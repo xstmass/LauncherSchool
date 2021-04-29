@@ -14,9 +14,9 @@ import java.util.Collection;
 
 public final class LauncherResponse extends Response
 {
-    public LauncherResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public LauncherResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     @Override

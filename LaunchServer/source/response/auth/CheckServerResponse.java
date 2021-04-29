@@ -15,9 +15,9 @@ import java.util.UUID;
 
 public final class CheckServerResponse extends Response
 {
-    public CheckServerResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public CheckServerResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     @Override

@@ -28,13 +28,13 @@ import java.net.SocketException;
 public final class ResponseThread implements Runnable
 {
     private final LaunchServer server;
-    private final long id;
+    private final String ip;
     private final Socket socket;
 
-    public ResponseThread(LaunchServer server, long id, Socket socket) throws SocketException
+    public ResponseThread(LaunchServer server, String ip, Socket socket) throws SocketException
     {
         this.server = server;
-        this.id = id;
+        this.ip = ip;
         this.socket = socket;
 
         // Fix socket flags
@@ -46,7 +46,7 @@ public final class ResponseThread implements Runnable
     {
         if (!server.serverSocketHandler.logConnections)
         {
-            LogHelper.debug("Connection #%d from %s", id, IOHelper.getIP(socket.getRemoteSocketAddress()));
+            LogHelper.debug("Connection from %s", ip);
         }
 
         // Process connection
@@ -55,7 +55,7 @@ public final class ResponseThread implements Runnable
         try (HInput input = new HInput(IOHelper.newBufferedInputStream(socket.getInputStream()));
              HOutput output = new HOutput(IOHelper.newBufferedOutStream(socket.getOutputStream())))
         {
-            Type type = readHandshake(input, output);
+            Type type = readHandshake(ip, input, output);
             if (type == null)
             { // Not accepted
                 cancelled = true;
@@ -69,7 +69,7 @@ public final class ResponseThread implements Runnable
             }
             catch (RequestException e)
             {
-                LogHelper.subDebug(String.format("#%d Request error: %s", id, e.getMessage()));
+                LogHelper.subDebug(String.format("#%s Request error: %s", IOHelper.getIP(socket.getRemoteSocketAddress()), e.getMessage()));
                 output.writeString(e.getMessage(), 0);
             }
         }
@@ -83,12 +83,12 @@ public final class ResponseThread implements Runnable
             IOHelper.close(socket);
             if (!cancelled)
             {
-                server.serverSocketHandler.onDisconnect(id, savedError);
+                server.serverSocketHandler.onDisconnect(IOHelper.getIP(socket.getRemoteSocketAddress()), savedError);
             }
         }
     }
 
-    private Type readHandshake(HInput input, HOutput output) throws IOException
+    private Type readHandshake(String ip, HInput input, HOutput output) throws IOException
     {
         boolean legacy = false;
 
@@ -99,7 +99,7 @@ public final class ResponseThread implements Runnable
             if (magicNumber != Launcher.PROTOCOL_MAGIC - 1)
             { // Previous launcher protocol
                 output.writeBoolean(false);
-                if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Protocol magic mismatch", id));
+                if (LogHelper.isDebugEnabled()) throw new IOException(String.format("[%s] Protocol magic mismatch", ip));
                 return null;
             }
             legacy = true;
@@ -110,7 +110,7 @@ public final class ResponseThread implements Runnable
         if (!keyModulus.equals(server.privateKey.getModulus()))
         {
             output.writeBoolean(false);
-            if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Key modulus mismatch", id));
+            if (LogHelper.isDebugEnabled()) throw new IOException(String.format("[%s] Key modulus mismatch", ip));
             return null;
         }
 
@@ -119,10 +119,10 @@ public final class ResponseThread implements Runnable
         if (legacy && type != Type.LAUNCHER)
         {
             output.writeBoolean(false);
-            if (LogHelper.isDebugEnabled()) throw new IOException(String.format("#%d Not LAUNCHER request on legacy protocol", id));
+            if (LogHelper.isDebugEnabled()) throw new IOException(String.format("[%s] Not LAUNCHER request on legacy protocol", ip));
             return null;
         }
-        if (!server.serverSocketHandler.onHandshake(id, type))
+        if (!server.serverSocketHandler.onHandshake(ip, type))
         {
             output.writeBoolean(false);
             return null;
@@ -138,11 +138,11 @@ public final class ResponseThread implements Runnable
     {
         if (server.serverSocketHandler.logConnections)
         {
-            LogHelper.info("Connection #%d from %s: %s", id, IOHelper.getIP(socket.getRemoteSocketAddress()), type.name());
+            LogHelper.info("Connection from %s: %s", ip, type.name());
         }
         else
         {
-            LogHelper.subDebug("#%d Type: %s", id, type.name());
+            LogHelper.subDebug("[%s] Type: %s", ip, type.name());
         }
 
         // Choose response based on type
@@ -150,38 +150,38 @@ public final class ResponseThread implements Runnable
         switch (type)
         {
             case PING:
-                response = new PingResponse(server, id, input, output);
+                response = new PingResponse(server, ip, input, output);
                 break;
             case AUTH:
-                response = new AuthResponse(server, id, input, output, IOHelper.getIP(socket.getRemoteSocketAddress()));
+                response = new AuthResponse(server, input, output, IOHelper.getIP(socket.getRemoteSocketAddress()));
                 break;
             case JOIN_SERVER:
-                response = new JoinServerResponse(server, id, input, output);
+                response = new JoinServerResponse(server, ip, input, output);
                 break;
             case CHECK_SERVER:
-                response = new CheckServerResponse(server, id, input, output);
+                response = new CheckServerResponse(server, ip, input, output);
                 break;
             case LAUNCHER:
-                response = new LauncherResponse(server, id, input, output);
+                response = new LauncherResponse(server, ip, input, output);
                 break;
             case UPDATE:
-                response = new UpdateResponse(server, id, input, output);
+                response = new UpdateResponse(server, ip, input, output);
                 break;
             case UPDATE_LIST:
-                response = new UpdateListResponse(server, id, input, output);
+                response = new UpdateListResponse(server, ip, input, output);
                 break;
             case PROFILE_BY_USERNAME:
-                response = new ProfileByUsernameResponse(server, id, input, output);
+                response = new ProfileByUsernameResponse(server, ip, input, output);
                 break;
             case PROFILE_BY_UUID:
-                response = new ProfileByUUIDResponse(server, id, input, output);
+                response = new ProfileByUUIDResponse(server, ip, input, output);
                 break;
             case BATCH_PROFILE_BY_USERNAME:
-                response = new BatchProfileByUsernameResponse(server, id, input, output);
+                response = new BatchProfileByUsernameResponse(server, ip, input, output);
                 break;
             case CUSTOM:
                 String name = VerifyHelper.verifyIDName(input.readASCII(255));
-                response = server.serverSocketHandler.newCustomResponse(name, id, input, output);
+                response = server.serverSocketHandler.newCustomResponse(name, ip, input, output);
                 break;
             default:
                 throw new AssertionError("Unsupported request type: " + type.name());
@@ -189,6 +189,6 @@ public final class ResponseThread implements Runnable
 
         // Reply
         response.reply();
-        LogHelper.subDebug("#%d Replied", id);
+        LogHelper.subDebug("[%s] Replied", ip);
     }
 }

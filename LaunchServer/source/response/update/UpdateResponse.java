@@ -22,9 +22,9 @@ import java.util.zip.DeflaterOutputStream;
 
 public final class UpdateResponse extends Response
 {
-    public UpdateResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public UpdateResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     @Override

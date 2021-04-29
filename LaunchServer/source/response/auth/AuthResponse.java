@@ -22,9 +22,9 @@ public final class AuthResponse extends Response
 {
     private final String ip;
 
-    public AuthResponse(LaunchServer server, long id, HInput input, HOutput output, String ip)
+    public AuthResponse(LaunchServer server, HInput input, HOutput output, String ip)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
         this.ip = ip;
     }
 

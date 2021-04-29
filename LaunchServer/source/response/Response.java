@@ -14,17 +14,17 @@ public abstract class Response
     @LauncherAPI
     protected final LaunchServer server;
     @LauncherAPI
-    protected final long id;
+    protected final String ip;
     @LauncherAPI
     protected final HInput input;
     @LauncherAPI
     protected final HOutput output;
 
     @LauncherAPI
-    protected Response(LaunchServer server, long id, HInput input, HOutput output)
+    protected Response(LaunchServer server, String ip, HInput input, HOutput output)
     {
         this.server = server;
-        this.id = id;
+        this.ip = ip;
         this.input = input;
         this.output = output;
     }
@@ -41,7 +41,7 @@ public abstract class Response
     @LauncherAPI
     protected final void debug(String message)
     {
-        LogHelper.subDebug("#%d %s", id, message);
+        LogHelper.subDebug("[%s] %s", ip, message);
     }
 
     @LauncherAPI
@@ -61,6 +61,6 @@ public abstract class Response
     public interface Factory
     {
         @LauncherAPI
-        Response newResponse(LaunchServer server, long id, HInput input, HOutput output);
+        Response newResponse(LaunchServer server, String ip, HInput input, HOutput output);
     }
 }

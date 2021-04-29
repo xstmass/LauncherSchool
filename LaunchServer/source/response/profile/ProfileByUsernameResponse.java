@@ -11,9 +11,9 @@ import java.util.UUID;
 
 public final class ProfileByUsernameResponse extends Response
 {
-    public ProfileByUsernameResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public ProfileByUsernameResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     public static void writeProfile(LaunchServer server, HOutput output, String username) throws IOException

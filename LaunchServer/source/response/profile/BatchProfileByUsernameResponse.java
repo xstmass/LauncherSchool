@@ -12,9 +12,9 @@ import java.util.Arrays;
 
 public final class BatchProfileByUsernameResponse extends Response
 {
-    public BatchProfileByUsernameResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public BatchProfileByUsernameResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     @Override

@@ -2,6 +2,7 @@ package launchserver.response;
 
 import launcher.LauncherAPI;
 import launcher.helper.CommonHelper;
+import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launcher.request.Request.Type;
@@ -83,15 +84,16 @@ public final class ServerSocketHandler implements Runnable, AutoCloseable
             {
                 Socket socket = serverSocket.accept();
 
+                String ip = IOHelper.getIP(socket.getRemoteSocketAddress());
+
                 // Invoke pre-connect listener
-                long id = idCounter.incrementAndGet();
-                if (listener != null && !listener.onConnect(id, socket.getInetAddress()))
+                if (listener != null && !listener.onConnect(ip, socket.getInetAddress()))
                 {
                     continue; // Listener didn't accepted this connection
                 }
 
                 // Reply in separate thread
-                threadPool.execute(new ResponseThread(server, id, socket));
+                threadPool.execute(new ResponseThread(server, ip, socket));
             }
         }
         catch (IOException e)
@@ -105,11 +107,11 @@ public final class ServerSocketHandler implements Runnable, AutoCloseable
     }
 
     @LauncherAPI
-    public Response newCustomResponse(String name, long id, HInput input, HOutput output)
+    public Response newCustomResponse(String name, String ip, HInput input, HOutput output)
     {
         Factory factory = VerifyHelper.getMapValue(customResponses, name,
                 String.format("Unknown custom response: '%s'", name));
-        return factory.newResponse(server, id, input, output);
+        return factory.newResponse(server, ip, input, output);
     }
 
     @LauncherAPI
@@ -126,28 +128,28 @@ public final class ServerSocketHandler implements Runnable, AutoCloseable
         this.listener = listener;
     }
 
-    /*package*/ void onDisconnect(long id, Throwable exc)
+    /*package*/ void onDisconnect(String ip, Throwable exc)
     {
         if (listener != null)
         {
-            listener.onDisconnect(id, exc);
+            listener.onDisconnect(ip, exc);
         }
     }
 
-    /*package*/ boolean onHandshake(long id, Type type)
+    /*package*/ boolean onHandshake(String ip, Type type)
     {
-        return listener == null || listener.onHandshake(id, type);
+        return listener == null || listener.onHandshake(ip, type);
     }
 
     public interface Listener
     {
         @LauncherAPI
-        boolean onConnect(long id, InetAddress address);
+        boolean onConnect(String ip, InetAddress address);
 
         @LauncherAPI
-        void onDisconnect(long id, Throwable exc);
+        void onDisconnect(String ip, Throwable exc);
 
         @LauncherAPI
-        boolean onHandshake(long id, Type type);
+        boolean onHandshake(String ip, Type type);
     }
 }

@@ -14,9 +14,9 @@ import java.io.IOException;
 
 public final class JoinServerResponse extends Response
 {
-    public JoinServerResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public JoinServerResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     @Override

@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public final class PingResponse extends Response
 {
-    public PingResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public PingResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     @Override

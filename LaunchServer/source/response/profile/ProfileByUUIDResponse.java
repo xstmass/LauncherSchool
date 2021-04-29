@@ -13,9 +13,9 @@ import java.util.UUID;
 
 public final class ProfileByUUIDResponse extends Response
 {
-    public ProfileByUUIDResponse(LaunchServer server, long id, HInput input, HOutput output)
+    public ProfileByUUIDResponse(LaunchServer server, String ip, HInput input, HOutput output)
     {
-        super(server, id, input, output);
+        super(server, ip, input, output);
     }
 
     public static PlayerProfile getProfile(LaunchServer server, UUID uuid, String username)
