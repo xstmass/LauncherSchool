@@ -12,7 +12,7 @@ import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launcher.serialize.config.entry.StringConfigEntry;
-import launchserver.auth.provider.MojangAuthProvider;
+import launchserver.auth.provider.AuthlibAuthProvider;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -38,15 +38,8 @@ public class AuthlibTextureProvider extends TextureProvider
     public AuthlibTextureProvider(BlockConfigEntry block)
     {
         super(block);
-
-        // "https://api.mojang.com/users/profiles/minecraft/"
         setUuidURL = block.getEntryValue("usersURL", StringConfigEntry.class);
-        // "https://sessionserver.mojang.com/session/minecraft/profile/"
         setProfileURL = block.getEntryValue("profileURL", StringConfigEntry.class);
-
-        // TODO: Verify
-        //IOHelper.verifyURL(setUuidURL);
-        //IOHelper.verifyURL(setProfileURL);
     }
 
     @Override
@@ -85,7 +78,7 @@ public class AuthlibTextureProvider extends TextureProvider
         {
             // TODO Don't query UUID by username if using mojang auth handler (not implemented yet)
             URL uuidURL = new URL(setUuidURL + IOHelper.urlEncode(username));
-            JsonObject uuidResponse = MojangAuthProvider.makeMojangRequest(uuidURL, null);
+            JsonObject uuidResponse = AuthlibAuthProvider.makeAuthlibRequest(uuidURL, null);
             if (uuidResponse == null)
             {
                 throw new IllegalArgumentException("Empty UUID response");
@@ -94,7 +87,7 @@ public class AuthlibTextureProvider extends TextureProvider
 
             // Obtain player profile
             URL profileURL = new URL(setProfileURL + uuidResolved);
-            JsonObject profileResponse = MojangAuthProvider.makeMojangRequest(profileURL, null);
+            JsonObject profileResponse = AuthlibAuthProvider.makeAuthlibRequest(profileURL, null);
             if (profileResponse == null)
             {
                 throw new IllegalArgumentException("Empty Authlib response");

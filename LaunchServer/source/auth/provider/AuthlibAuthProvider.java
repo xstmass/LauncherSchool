@@ -23,14 +23,18 @@ import java.util.regex.Pattern;
 public class AuthlibAuthProvider extends AuthProvider
 {
     private static final Pattern UUID_REGEX = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
-    private static final java.net.URL URL;
+    private static URL URL;
     private static String authUrl;
 
     // TODO:
     //  https://wiki.vg/Authentication#Refresh
     //  https://wiki.vg/Authentication#Signout
-    static
+
+    AuthlibAuthProvider(BlockConfigEntry block)
     {
+        super(block);
+        authUrl = block.getEntryValue("authUrl", StringConfigEntry.class);
+
         try
         {
             // Docs: https://wiki.vg/Authentication#Authenticate
@@ -40,12 +44,6 @@ public class AuthlibAuthProvider extends AuthProvider
         {
             throw new InternalError(e);
         }
-    }
-
-    AuthlibAuthProvider(BlockConfigEntry block)
-    {
-        super(block);
-        authUrl = block.getEntryValue("authUrl", StringConfigEntry.class);
     }
 
     public static JsonObject makeAuthlibRequest(URL url, JsonObject request) throws IOException
@@ -75,7 +73,7 @@ public class AuthlibAuthProvider extends AuthProvider
 
             // Parse response
             String json = new String(IOHelper.read(input), charsetObject);
-            LogHelper.subDebug("Raw Mojang response: '" + json + '\'');
+            LogHelper.subDebug("Raw Authlib response: '" + json + '\'');
             return json.isEmpty() ? null : Json.parse(json).asObject();
         }
     }
@@ -91,7 +89,7 @@ public class AuthlibAuthProvider extends AuthProvider
         JsonObject response = makeAuthlibRequest(URL, request);
         if (response == null)
         {
-            authError("Empty authlib response");
+            authError("Empty Authlib response");
         }
         JsonValue errorMessage = response.get("errorMessage");
         if (errorMessage != null)
