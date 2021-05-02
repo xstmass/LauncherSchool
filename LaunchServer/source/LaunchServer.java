@@ -13,17 +13,15 @@ import launcher.serialize.config.TextConfigWriter;
 import launcher.serialize.config.entry.*;
 import launcher.serialize.signed.SignedObjectHolder;
 import launchserver.auth.AuthException;
-import launchserver.auth.AuthLimiter;
+import launchserver.auth.limiter.AuthLimiter;
 import launchserver.auth.MySQLSourceConfig;
 import launchserver.auth.handler.AuthHandler;
 import launchserver.auth.handler.CachedAuthHandler;
 import launchserver.auth.handler.FileAuthHandler;
+import launchserver.auth.limiter.AuthLimiterConfig;
 import launchserver.auth.provider.AuthProvider;
 import launchserver.auth.provider.DigestAuthProvider;
-import launchserver.binary.EXEL4JLauncherBinary;
-import launchserver.binary.EXELauncherBinary;
-import launchserver.binary.JARLauncherBinary;
-import launchserver.binary.LauncherBinary;
+import launchserver.binary.*;
 import launchserver.command.Command;
 import launchserver.command.CommandException;
 import launchserver.command.handler.CommandHandler;
@@ -367,7 +365,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
     }
 
     private LauncherBinary binary() {
-        if (config.launch4J.enabled) return new EXEL4JLauncherBinary(this);
+        if (config.launch4J) return new EXEL4JLauncherBinary(this);
         return new EXELauncherBinary(this);
     }
 
@@ -554,11 +552,9 @@ public final class LaunchServer implements Runnable, AutoCloseable
 
         // AuthLimiter
         @LauncherAPI
-        public final int authRateLimit;
+        public final Boolean authLimit;
         @LauncherAPI
-        public final int authRateLimitMilis;
-        @LauncherAPI
-        public final String authRejectString;
+        public final AuthLimiterConfig authLimitConfig;
 
         // Mirrors
         @LauncherAPI
@@ -574,7 +570,9 @@ public final class LaunchServer implements Runnable, AutoCloseable
 
         // Misc options
         @LauncherAPI
-        public final ExeConf launch4J;
+        public final boolean launch4J;
+        @LauncherAPI
+        public final EXEL4JLauncherConfig launch4JConfig;
         @LauncherAPI
         public final boolean compress;
         private final StringConfigEntry address;
@@ -590,12 +588,8 @@ public final class LaunchServer implements Runnable, AutoCloseable
                     block.getEntryValue("bindAddress", StringConfigEntry.class) : getAddress();
 
             // Limit Autorization
-            authRateLimit = VerifyHelper.verifyInt(block.getEntryValue("authRateLimit", IntegerConfigEntry.class),
-                    VerifyHelper.range(0, 1000000), "Illegal authRateLimit");
-            authRateLimitMilis = VerifyHelper.verifyInt(block.getEntryValue("authRateLimitMilis", IntegerConfigEntry.class),
-                    VerifyHelper.range(10, 10000000), "Illegal authRateLimitMillis");
-            authRejectString = block.hasEntry("authRejectString") ?
-                    block.getEntryValue("authRejectString", StringConfigEntry.class) : "Превышен лимит авторизаций. Подождите некоторое время перед повторной попыткой";
+            authLimit = block.getEntryValue("authLimit", BooleanConfigEntry.class);
+            authLimitConfig = new AuthLimiterConfig(block.getEntry("authLimitConfig", BlockConfigEntry.class));
 
             // Set handlers & providers
             authHandler = AuthHandler.newHandler(block.getEntryValue("authHandler", StringConfigEntry.class),
@@ -612,34 +606,11 @@ public final class LaunchServer implements Runnable, AutoCloseable
             mirrors = block.getEntry("mirrors", ListConfigEntry.class);
 
             // Set misc config
-            launch4J = new ExeConf(block.getEntry("launch4J", BlockConfigEntry.class));
+            launch4J = block.getEntryValue("launch4J", BooleanConfigEntry.class);
+            launch4JConfig = new EXEL4JLauncherConfig(block.getEntry("launch4JConfig", BlockConfigEntry.class));
+
             binaryName = block.getEntryValue("binaryName", StringConfigEntry.class);
             compress = block.getEntryValue("compress", BooleanConfigEntry.class);
-        }
-
-        public static class ExeConf extends ConfigObject {
-            public final boolean enabled;
-            public String productName;
-            public String fileDesc;
-            public String internalName;
-            public String copyright;
-            public String trademarks;
-
-            private ExeConf(BlockConfigEntry block)
-            {
-                super(block);
-                enabled = block.getEntryValue("enabled", BooleanConfigEntry.class);
-                productName = block.hasEntry("productName") ? block.getEntryValue("productName", StringConfigEntry.class)
-                        : "LauncherSchool";
-                fileDesc = block.hasEntry("fileDesc") ? block.getEntryValue("fileDesc", StringConfigEntry.class)
-                        : "LauncherSchool by KeeperJerry";
-                internalName = block.hasEntry("internalName") ? block.getEntryValue("internalName", StringConfigEntry.class)
-                        : "Launcher";
-                copyright = block.hasEntry("copyright") ? block.getEntryValue("copyright", StringConfigEntry.class)
-                        : "© KeeperJerry";
-                trademarks = block.hasEntry("trademarks") ? block.getEntryValue("trademarks", StringConfigEntry.class)
-                        : "This product is licensed under GNU v3.0";
-            }
         }
 
         @LauncherAPI

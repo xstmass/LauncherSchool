@@ -9,6 +9,7 @@ import launcher.request.Request.Type;
 import launcher.request.RequestException;
 import launcher.serialize.HInput;
 import launcher.serialize.HOutput;
+import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.LaunchServer;
 import launchserver.response.auth.AuthResponse;
 import launchserver.response.auth.CheckServerResponse;
@@ -44,9 +45,14 @@ public final class ResponseThread implements Runnable
     @Override
     public void run()
     {
-        if (!server.serverSocketHandler.logConnections)
+        if (server.config.authLimitConfig.blockIp.stream(StringConfigEntry.class).anyMatch(s -> s.equals(ip)) && server.config.authLimitConfig.blockOnConnect)
         {
-            LogHelper.debug("Connection from %s", ip);
+            if (!server.serverSocketHandler.logConnections) LogHelper.debug("Blocked connection from %s", ip);
+            return;
+        }
+        else
+        {
+            if (!server.serverSocketHandler.logConnections) LogHelper.debug("Connection from %s", ip);
         }
 
         // Process connection

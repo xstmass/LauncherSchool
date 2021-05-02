@@ -82,20 +82,20 @@ public final class EXEL4JLauncherBinary extends LauncherBinary
 
         // Prepare version info (product)
         VersionInfo info = new VersionInfo();
-        info.setProductName(server.config.launch4J.productName);
+        info.setProductName(server.config.launch4JConfig.productName);
         info.setProductVersion(Launcher.VERSION);
         info.setTxtProductVersion(Launcher.VERSION + ", build " + Launcher.BUILD);
 
         // Prepare version info (file)
-        info.setFileDescription(server.config.launch4J.fileDesc);
+        info.setFileDescription(server.config.launch4JConfig.fileDesc);
         info.setFileVersion(Launcher.VERSION);
         info.setTxtFileVersion(Launcher.VERSION + ", build " + Launcher.BUILD);
         info.setOriginalFilename(binaryFile.getFileName().toString());
 
         // Prepare version info (misc)
-        info.setInternalName(server.config.launch4J.internalName);
-        info.setCopyright(server.config.launch4J.copyright);
-        info.setTrademarks(server.config.launch4J.trademarks);
+        info.setInternalName(server.config.launch4JConfig.internalName);
+        info.setCopyright(server.config.launch4JConfig.copyright);
+        info.setTrademarks(server.config.launch4JConfig.trademarks);
         info.setLanguage(LanguageID.RUSSIAN);
         config.setVersionInfo(info);
 

@@ -6,6 +6,7 @@ import launcher.helper.SecurityHelper;
 import launcher.helper.VerifyHelper;
 import launcher.serialize.HInput;
 import launcher.serialize.HOutput;
+import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.LaunchServer;
 import launchserver.auth.AuthException;
 import launchserver.auth.provider.AuthProvider;
@@ -59,11 +60,21 @@ public final class AuthResponse extends Response
         AuthProviderResult result;
         try
         {
-            if (server.limiter.isLimit(ip))
+            if (server.config.authLimitConfig.blockIp.stream(StringConfigEntry.class).anyMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect)
             {
-                AuthProvider.authError(server.config.authRejectString);
+                AuthProvider.authError(server.config.authLimitConfig.authBannedString);
                 return;
             }
+
+            if (server.config.authLimitConfig.allowIp.stream(StringConfigEntry.class).noneMatch(s -> s.equals(ip)))
+            {
+                if (server.limiter.isLimit(ip))
+                {
+                    AuthProvider.authError(server.config.authLimitConfig.authRejectString);
+                    return;
+                }
+            }
+
             result = server.config.authProvider.auth(login, password, ip);
             if (!VerifyHelper.isValidUsername(result.username))
             {
