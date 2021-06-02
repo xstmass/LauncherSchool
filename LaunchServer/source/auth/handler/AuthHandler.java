@@ -21,6 +21,9 @@ public abstract class AuthHandler extends ConfigObject implements AutoCloseable
     {
         registerHandler("memory", MemoryAuthHandler::new);
         registerHandler("delegate", DelegateAuthHandler::new);
+        registerHandler("mojang", MojangAuthHandler::new);
+        registerHandler("authlib", AuthlibAuthHandler::new);
+        registerHandler("minesocial", MineSocialAuthHandler::new);
 
         // Auth handler that doesn't do nothing :D
         registerHandler("binaryFile", BinaryFileAuthHandler::new);
