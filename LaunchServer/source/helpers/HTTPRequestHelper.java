@@ -1,10 +1,17 @@
 package launchserver.helpers;
 
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.WriterConfig;
+import launcher.helper.IOHelper;
+import launcher.helper.LogHelper;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class HTTPRequestHelper {
     private static HttpURLConnection makeRequest(URL url, String requestMethod) throws IOException {
@@ -30,5 +37,25 @@ public class HTTPRequestHelper {
         }
         in.close();
         return response.toString();
+    }
+
+    public static int authJoinRequest(URL url, JsonObject request, String authType) throws IOException
+    {
+        HttpURLConnection connection = request == null ?
+                (HttpURLConnection) IOHelper.newConnection(url) :
+                IOHelper.newConnectionPost(url);
+
+        // Make request
+        if (request != null)
+        {
+            connection.setRequestProperty("Content-Type", "application/json");
+            try (OutputStream output = connection.getOutputStream())
+            {
+                output.write(request.toString(WriterConfig.MINIMAL).getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        int statusCode = connection.getResponseCode();
+        LogHelper.subDebug("Raw " + authType + " status сode: '" + statusCode + '\'');
+        return statusCode;
     }
 }

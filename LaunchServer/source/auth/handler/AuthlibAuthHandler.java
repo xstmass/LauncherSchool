@@ -2,20 +2,15 @@ package launchserver.auth.handler;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.WriterConfig;
-import launcher.helper.IOHelper;
-import launcher.helper.LogHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.auth.provider.AuthProviderResult;
 import launchserver.auth.provider.AuthlibAuthProviderResult;
+import launchserver.helpers.HTTPRequestHelper;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -69,7 +64,7 @@ public class AuthlibAuthHandler extends AuthHandler
                 add("accessToken", accessToken).add("selectedProfile", usernameToUUID(username).toString().replace("-", "")).
                 add("serverId", serverID);
 
-        int response = makeAuthlibRequest(URL, request);
+        int response = HTTPRequestHelper.authJoinRequest(URL, request, "AuthLib");
 
         if (200 <= response && response < 300 )
         {
@@ -80,26 +75,6 @@ public class AuthlibAuthHandler extends AuthHandler
             authError("Empty Authlib Handler response");
         }
         return false;
-    }
-
-    public static int makeAuthlibRequest(URL url, JsonObject request) throws IOException
-    {
-        HttpURLConnection connection = request == null ?
-                (HttpURLConnection) IOHelper.newConnection(url) :
-                IOHelper.newConnectionPost(url);
-
-        // Make request
-        if (request != null)
-        {
-            connection.setRequestProperty("Content-Type", "application/json");
-            try (OutputStream output = connection.getOutputStream())
-            {
-                output.write(request.toString(WriterConfig.MINIMAL).getBytes(StandardCharsets.UTF_8));
-            }
-        }
-        int statusCode = connection.getResponseCode();
-        LogHelper.subDebug("Raw Authlib status сode: '" + statusCode + '\'');
-        return statusCode;
     }
 
     @Override
