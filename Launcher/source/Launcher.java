@@ -157,7 +157,7 @@ public final class Launcher
         }
         catch (Throwable ignored)
         {
-            LogHelper.warning("JavaFX API isn't available");
+            LogHelper.error("JavaFX API isn't available");
         }
     }
 
