@@ -50,7 +50,7 @@ public class AuthlibAuthHandler extends AuthHandler
 
     @Override
     public UUID checkServer(String username, String serverID) {
-        return UUID.fromString(serverID);
+        return UUID.fromString(username);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class MojangAuthHandler extends AuthHandler
     @Override
     public UUID checkServer(String username, String serverID) {
         // .....допустим
-        return UUID.fromString(serverID);
+        return UUID.fromString(username);
     }
 
     @Override
