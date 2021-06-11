@@ -60,7 +60,6 @@ public class AuthlibAuthHandler extends AuthHandler
     @Override
     public boolean joinServer(String username, String accessToken, String serverID) throws IOException {
         JsonObject request = Json.object().
-                add("agent", Json.object().add("name", "Minecraft").add("version", 1)).
                 add("accessToken", accessToken).add("selectedProfile", usernameToUUID(username).toString().replace("-", "")).
                 add("serverId", serverID);
 
