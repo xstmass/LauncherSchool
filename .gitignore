@@ -9,6 +9,7 @@
 build/mapping.pro
 build/production/*
 build/test/*
+build/stringer.jar
 !buildnumber
 
 Launcher.jar

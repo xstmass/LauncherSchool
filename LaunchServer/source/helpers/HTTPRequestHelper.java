@@ -1,16 +1,15 @@
 package launchserver.helpers;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.WriterConfig;
 import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class HTTPRequestHelper {
@@ -18,6 +17,46 @@ public class HTTPRequestHelper {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod);
         return connection;
+    }
+
+    public static JsonObject makeAuthlibRequest(URL url, JsonObject request, String requestType) throws IOException
+    {
+        HttpURLConnection connection = request == null ?
+                (HttpURLConnection) IOHelper.newConnection(url) :
+                IOHelper.newConnectionPost(url);
+
+        // Make request
+        if (request != null)
+        {
+            connection.setRequestProperty("Content-Type", "application/json");
+            try (OutputStream output = connection.getOutputStream())
+            {
+                output.write(request.toString(WriterConfig.MINIMAL).getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        int statusCode = connection.getResponseCode();
+
+        // Read response
+        InputStream errorInput = connection.getErrorStream();
+        try (InputStream input = errorInput == null ? connection.getInputStream() : errorInput)
+        {
+            String charset = connection.getContentEncoding();
+            Charset charsetObject = charset == null ?
+                    IOHelper.UNICODE_CHARSET : Charset.forName(charset);
+
+            // Parse response
+            String json = new String(IOHelper.read(input), charsetObject);
+            LogHelper.subDebug("Raw " + requestType + " response: '" + json + '\'');
+
+            if (200 <= statusCode && statusCode < 300)
+            {
+                return Json.parse(json).asObject();
+            }
+            else
+            {
+                return json.isEmpty() ? null : Json.parse(json).asObject();
+            }
+        }
     }
 
     public static boolean fileExist(URL url) throws IOException {

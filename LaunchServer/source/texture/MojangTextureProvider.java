@@ -11,7 +11,7 @@ import launcher.helper.JVMHelper;
 import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
-import launchserver.auth.provider.MojangAuthProvider;
+import launchserver.helpers.HTTPRequestHelper;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -71,7 +71,7 @@ public final class MojangTextureProvider extends TextureProvider
         {
             // TODO Don't query UUID by username if using mojang auth handler (not implemented yet)
             URL uuidURL = new URL("https://api.mojang.com/users/profiles/minecraft/" + IOHelper.urlEncode(username));
-            JsonObject uuidResponse = MojangAuthProvider.makeMojangRequest(uuidURL, null);
+            JsonObject uuidResponse = HTTPRequestHelper.makeAuthlibRequest(uuidURL, null, "Mojang");
             if (uuidResponse == null)
             {
                 throw new IllegalArgumentException("Empty UUID response");
@@ -80,7 +80,7 @@ public final class MojangTextureProvider extends TextureProvider
 
             // Obtain player profile
             URL profileURL = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuidResolved);
-            JsonObject profileResponse = MojangAuthProvider.makeMojangRequest(profileURL, null);
+            JsonObject profileResponse = HTTPRequestHelper.makeAuthlibRequest(profileURL, null, "Mojang");
             if (profileResponse == null)
             {
                 throw new IllegalArgumentException("Empty Mojang response");

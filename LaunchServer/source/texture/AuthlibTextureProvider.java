@@ -12,7 +12,7 @@ import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launcher.serialize.config.entry.StringConfigEntry;
-import launchserver.auth.provider.AuthlibAuthProvider;
+import launchserver.helpers.HTTPRequestHelper;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -78,7 +78,7 @@ public class AuthlibTextureProvider extends TextureProvider
         {
             // TODO Don't query UUID by username if using mojang auth handler (not implemented yet)
             URL uuidURL = new URL(setUuidURL + IOHelper.urlEncode(username));
-            JsonObject uuidResponse = AuthlibAuthProvider.makeAuthlibRequest(uuidURL, null);
+            JsonObject uuidResponse = HTTPRequestHelper.makeAuthlibRequest(uuidURL, null, "Authlib");
             if (uuidResponse == null)
             {
                 throw new IllegalArgumentException("Empty UUID response");
@@ -87,7 +87,7 @@ public class AuthlibTextureProvider extends TextureProvider
 
             // Obtain player profile
             URL profileURL = new URL(setProfileURL + uuidResolved);
-            JsonObject profileResponse = AuthlibAuthProvider.makeAuthlibRequest(profileURL, null);
+            JsonObject profileResponse = HTTPRequestHelper.makeAuthlibRequest(profileURL, null, "Authlib");
             if (profileResponse == null)
             {
                 throw new IllegalArgumentException("Empty Authlib response");

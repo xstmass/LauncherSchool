@@ -2,6 +2,7 @@ package launchserver.auth.handler;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
+import launcher.helper.IOHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launchserver.auth.provider.AuthProviderResult;
 import launchserver.auth.provider.MojangAuthProviderResult;
@@ -16,13 +17,14 @@ import java.util.UUID;
 
 public class MojangAuthHandler extends AuthHandler
 {
-    private static final java.net.URL URL;
+    private static final java.net.URL URL_join, URL_hasJoin;
 
     static
     {
         try
         {
-            URL = new URL("https://sessionserver.mojang.com/session/minecraft/join");
+            URL_join = new URL("https://sessionserver.mojang.com/session/minecraft/join");
+            URL_hasJoin = new URL("https://sessionserver.mojang.com/session/minecraft/hasJoined");
         }
         catch (MalformedURLException e)
         {
@@ -48,9 +50,26 @@ public class MojangAuthHandler extends AuthHandler
     }
 
     @Override
-    public UUID checkServer(String username, String serverID) {
-        // .....допустим
-        return UUID.fromString(username);
+    public UUID checkServer(String username, String serverID)
+    {
+        JsonObject uuidResponse;
+        try {
+            URL uuidURL = new URL(URL_hasJoin + "?username=" + IOHelper.urlEncode(username) + "&serverId=" + IOHelper.urlEncode(serverID));
+            uuidResponse = HTTPRequestHelper.makeAuthlibRequest(uuidURL, null, "Mojang");
+        }
+        catch (IOException e)
+        {
+            throw new IllegalArgumentException("Empty UUID response");
+        }
+        if (uuidResponse.get("error") != null)
+        {
+            throw new IllegalArgumentException(String.valueOf(uuidResponse.get("errorMessage")));
+        }
+        if (uuidResponse.get("id") == null)
+        {
+            throw new IllegalArgumentException("Empty UUID response");
+        }
+        return UUID.fromString(uuidResponse.get("id").asString().replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
     }
 
     @Override
@@ -60,10 +79,11 @@ public class MojangAuthHandler extends AuthHandler
     @Override
     public boolean joinServer(String username, String accessToken, String serverID) throws IOException {
         JsonObject request = Json.object().
-                add("accessToken", accessToken).add("selectedProfile", usernameToUUID(username).toString().replace("-", "")).
+                add("accessToken", accessToken).
+                add("selectedProfile", usernameToUUID(username).toString().replace("-", "")).
                 add("serverId", serverID);
 
-        int response = HTTPRequestHelper.authJoinRequest(URL, request, "Mojang");
+        int response = HTTPRequestHelper.authJoinRequest(URL_join, request, "Mojang");
 
         if (200 <= response && response < 300 )
         {

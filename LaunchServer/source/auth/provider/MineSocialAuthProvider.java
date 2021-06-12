@@ -7,6 +7,7 @@ import com.eclipsesource.json.WriterConfig;
 import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
+import launchserver.helpers.HTTPRequestHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,55 +42,16 @@ public class MineSocialAuthProvider extends AuthProvider
         super(block);
     }
 
-    public static JsonObject makeMineSocialRequest(URL url, JsonObject request) throws IOException
-    {
-        HttpURLConnection connection = request == null ?
-                (HttpURLConnection) IOHelper.newConnection(url) :
-                IOHelper.newConnectionPost(url);
-
-        // Make request
-        if (request != null)
-        {
-            connection.setRequestProperty("Content-Type", "application/json");
-            try (OutputStream output = connection.getOutputStream())
-            {
-                output.write(request.toString(WriterConfig.MINIMAL).getBytes(StandardCharsets.UTF_8));
-            }
-        }
-        int statusCode = connection.getResponseCode();
-
-        // Read response
-        InputStream errorInput = connection.getErrorStream();
-        try (InputStream input = errorInput == null ? connection.getInputStream() : errorInput)
-        {
-            String charset = connection.getContentEncoding();
-            Charset charsetObject = charset == null ?
-                    IOHelper.UNICODE_CHARSET : Charset.forName(charset);
-
-            // Parse response
-            String json = new String(IOHelper.read(input), charsetObject);
-            LogHelper.subDebug("Raw MineSocial response: '" + json + '\'');
-
-            if (200 <= statusCode && statusCode < 300)
-            {
-                return Json.parse(json).asObject();
-            }
-            else
-            {
-                return json.isEmpty() ? null : Json.parse(json).asObject();
-            }
-        }
-    }
-
     @Override
     public AuthProviderResult auth(String login, String password, String ip) throws Throwable
     {
+        // https://wiki.vg/Authentication#Payload
         JsonObject request = Json.object().
                 add("agent", Json.object().add("name", "Minecraft").add("version", 1)).
                 add("username", login).add("password", password);
 
         // Verify there's no error
-        JsonObject response = makeMineSocialRequest(URL, request);
+        JsonObject response = HTTPRequestHelper.makeAuthlibRequest(URL, request, "MineSocial");
         if (response == null)
         {
             authError("Empty MineSocial Provider response");

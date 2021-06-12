@@ -12,6 +12,7 @@ import launcher.helper.LogHelper;
 import launcher.helper.VerifyHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launchserver.auth.provider.MineSocialAuthProvider;
+import launchserver.helpers.HTTPRequestHelper;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -72,7 +73,7 @@ public class MineSocialTextureProvider extends TextureProvider
         try
         {
             URL uuidURL = new URL("https://api.minesocial.net/users/profiles/minecraft/" + IOHelper.urlEncode(username));
-            JsonObject uuidResponse = MineSocialAuthProvider.makeMineSocialRequest(uuidURL, null);
+            JsonObject uuidResponse = HTTPRequestHelper.makeAuthlibRequest(uuidURL, null, "MineSocial");
             if (uuidResponse == null)
             {
                 throw new IllegalArgumentException("Empty MineSocial UUID response!");
@@ -81,7 +82,7 @@ public class MineSocialTextureProvider extends TextureProvider
 
             // Obtain player profile
             URL profileURL = new URL("https://sessionserver.minesocial.net/session/minecraft/profile/" + uuidResolved);
-            JsonObject profileResponse = MineSocialAuthProvider.makeMineSocialRequest(profileURL, null);
+            JsonObject profileResponse = HTTPRequestHelper.makeAuthlibRequest(profileURL, null, "MineSocial");
             if (profileResponse == null)
             {
                 throw new IllegalArgumentException("Empty MineSocial profile response!");
