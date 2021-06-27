@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 public class HTTPRequestHelper {
     private static HttpURLConnection makeRequest(URL url, String requestMethod) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
         connection.setRequestMethod(requestMethod);
         return connection;
     }
@@ -23,7 +24,7 @@ public class HTTPRequestHelper {
     {
         HttpURLConnection connection = request == null ?
                 (HttpURLConnection) IOHelper.newConnection(url) :
-                IOHelper.newConnectionPost(url);
+                makeRequest(url, "POST");
 
         // Make request
         if (request != null)
@@ -82,7 +83,7 @@ public class HTTPRequestHelper {
     {
         HttpURLConnection connection = request == null ?
                 (HttpURLConnection) IOHelper.newConnection(url) :
-                IOHelper.newConnectionPost(url);
+                makeRequest(url, "POST");
 
         // Make request
         if (request != null)
