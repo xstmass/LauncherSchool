@@ -25,6 +25,7 @@ public abstract class AuthProvider extends ConfigObject implements AutoCloseable
         registerProvider("mojang", MojangAuthProvider::new);
         registerProvider("authlib", AuthlibAuthProvider::new);
         registerProvider("minesocial", MineSocialAuthProvider::new);
+        registerProvider("elyby", ElyByAuthProvider::new);
         registerProvider("mysql", MySQLAuthProvider::new);
         registerProvider("mysql-bcrypt", MySQLBcryptAuthProvider::new);
         registerProvider("mysql-8", MySQL8AuthProvider::new);

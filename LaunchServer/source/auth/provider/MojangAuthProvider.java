@@ -61,7 +61,7 @@ public final class MojangAuthProvider extends AuthProvider
         String launcherToken = response.get("accessToken").asString();
 
         // We're done
-        return new MojangAuthProviderResult(username, accessToken, uuid, launcherToken);
+        return new AuthlibAuthProviderResult(username, accessToken, uuid, launcherToken);
     }
 
     @Override

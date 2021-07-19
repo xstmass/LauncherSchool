@@ -5,7 +5,7 @@ import com.eclipsesource.json.JsonObject;
 import launcher.helper.IOHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launchserver.auth.provider.AuthProviderResult;
-import launchserver.auth.provider.MineSocialAuthProviderResult;
+import launchserver.auth.provider.AuthlibAuthProviderResult;
 import launchserver.helpers.HTTPRequestHelper;
 
 import java.io.IOException;
@@ -41,8 +41,8 @@ public class MineSocialAuthHandler extends AuthHandler
 
     @Override
     public UUID auth(AuthProviderResult authResult) {
-        if (authResult instanceof MineSocialAuthProviderResult) {
-            MineSocialAuthProviderResult result = (MineSocialAuthProviderResult) authResult;
+        if (authResult instanceof AuthlibAuthProviderResult) {
+            AuthlibAuthProviderResult result = (AuthlibAuthProviderResult) authResult;
             usernameToUUID.put(result.username, result.uuid);
             return result.uuid;
         }

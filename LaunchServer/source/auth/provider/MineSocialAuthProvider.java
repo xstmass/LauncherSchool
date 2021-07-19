@@ -3,20 +3,11 @@ package launchserver.auth.provider;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.WriterConfig;
-import launcher.helper.IOHelper;
-import launcher.helper.LogHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 import launchserver.helpers.HTTPRequestHelper;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -45,10 +36,11 @@ public class MineSocialAuthProvider extends AuthProvider
     @Override
     public AuthProviderResult auth(String login, String password, String ip) throws Throwable
     {
+        String clientToken = UUID.randomUUID().toString().replaceAll("-", "");
         // https://wiki.vg/Authentication#Payload
         JsonObject request = Json.object().
                 add("agent", Json.object().add("name", "Minecraft").add("version", 1)).
-                add("username", login).add("password", password);
+                add("username", login).add("password", password).add("clientToken", clientToken);
 
         // Verify there's no error
         JsonObject response = HTTPRequestHelper.makeAuthlibRequest(URL, request, "MineSocial");
@@ -70,7 +62,7 @@ public class MineSocialAuthProvider extends AuthProvider
         String launcherToken = response.get("clientToken").asString();
 
         // We're done
-        return new MineSocialAuthProviderResult(username, accessToken, uuid, launcherToken);
+        return new AuthlibAuthProviderResult(username, accessToken, uuid, launcherToken);
     }
 
     @Override
