@@ -210,7 +210,8 @@ public final class LaunchServer implements Runnable, AutoCloseable
             }
             catch (Throwable exc)
             {
-                LogHelper.error(exc);
+                LogHelper.subWarning("No connection with the update server! Maybe maintenance.");
+                if (LogHelper.isDebugEnabled()) LogHelper.error(exc);
             }
         }
         else
