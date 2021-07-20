@@ -67,6 +67,12 @@ public final class AuthResponse extends Response
                 return;
             }
 
+            if (AuthLimiterIPConfig.Instance.getAllowIp().stream().noneMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect && server.config.authLimit && server.config.authLimitConfig.onlyAllowIp)
+            {
+                AuthProvider.authError(server.config.authLimitConfig.authNotWhitelistString);
+                return;
+            }
+
             if (AuthLimiterIPConfig.Instance.getAllowIp().stream().noneMatch(s -> s.equals(ip)) && server.config.authLimit && server.config.authLimitConfig.useAllowIp)
             {
                 if (server.limiter.isLimit(ip))
