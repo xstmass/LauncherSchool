@@ -45,7 +45,7 @@ public class IPBlockCommand extends Command
             return;
         }
 
-        if (!IPAddressUtil.isIPv4LiteralAddress(getIP) || !IPAddressUtil.isIPv6LiteralAddress(getIP))
+        if (!IPAddressUtil.isIPv4LiteralAddress(getIP) && !IPAddressUtil.isIPv6LiteralAddress(getIP))
         {
             LogHelper.error("This is not an IP address!");
             return;
