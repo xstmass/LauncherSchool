@@ -9,6 +9,8 @@ import launchserver.command.CommandException;
 import launchserver.command.auth.*;
 import launchserver.command.basic.*;
 import launchserver.command.hash.*;
+import launchserver.command.ip.IPAllowCommand;
+import launchserver.command.ip.IPBlockCommand;
 import launchserver.command.legacy.DumpBinaryAuthHandler;
 
 import java.io.IOException;
@@ -41,7 +43,12 @@ public abstract class CommandHandler implements Runnable
         registerCommand("syncBinaries", new SyncBinariesCommand(server));
         registerCommand("syncUpdates", new SyncUpdatesCommand(server));
         registerCommand("syncProfiles", new SyncProfilesCommand(server));
-        // Custom
+
+        // Register IP commands
+        registerCommand("allowIp", new IPAllowCommand(server));
+        registerCommand("blockIp", new IPBlockCommand(server));
+
+        // Register custom commands
         registerCommand("syncAll", new SyncAllCommand(server));
 
         // Register auth commands

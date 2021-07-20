@@ -11,6 +11,7 @@ import launcher.serialize.HInput;
 import launcher.serialize.HOutput;
 import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.LaunchServer;
+import launchserver.auth.limiter.AuthLimiterIPConfig;
 import launchserver.response.auth.AuthResponse;
 import launchserver.response.auth.CheckServerResponse;
 import launchserver.response.auth.JoinServerResponse;
@@ -45,9 +46,9 @@ public final class ResponseThread implements Runnable
     @Override
     public void run()
     {
-        if (server.config.authLimitConfig.blockIp.stream(StringConfigEntry.class).anyMatch(s -> s.equals(ip)) && server.config.authLimitConfig.blockOnConnect)
+        if (AuthLimiterIPConfig.Instance.getBlockIp().stream().anyMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect && server.config.authLimit && server.config.authLimitConfig.useBlockIp)
         {
-            if (!server.serverSocketHandler.logConnections) LogHelper.debug("Blocked connection from %s", ip);
+            if (!server.serverSocketHandler.logConnections) LogHelper.debug("Blocked connection from %s [Found in Block List]", ip);
             return;
         }
         else

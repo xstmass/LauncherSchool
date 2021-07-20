@@ -9,6 +9,7 @@ import launcher.serialize.HOutput;
 import launcher.serialize.config.entry.StringConfigEntry;
 import launchserver.LaunchServer;
 import launchserver.auth.AuthException;
+import launchserver.auth.limiter.AuthLimiterIPConfig;
 import launchserver.auth.provider.AuthProvider;
 import launchserver.auth.provider.AuthProviderResult;
 import launchserver.response.Response;
@@ -60,13 +61,13 @@ public final class AuthResponse extends Response
         AuthProviderResult result;
         try
         {
-            if (server.config.authLimitConfig.blockIp.stream(StringConfigEntry.class).anyMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect)
+            if (AuthLimiterIPConfig.Instance.getBlockIp().stream().anyMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect && server.config.authLimit && server.config.authLimitConfig.useBlockIp)
             {
                 AuthProvider.authError(server.config.authLimitConfig.authBannedString);
                 return;
             }
 
-            if (server.config.authLimitConfig.allowIp.stream(StringConfigEntry.class).noneMatch(s -> s.equals(ip)))
+            if (AuthLimiterIPConfig.Instance.getAllowIp().stream().noneMatch(s -> s.equals(ip)) && server.config.authLimit && server.config.authLimitConfig.useAllowIp)
             {
                 if (server.limiter.isLimit(ip))
                 {

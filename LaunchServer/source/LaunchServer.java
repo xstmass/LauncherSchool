@@ -19,6 +19,7 @@ import launchserver.auth.handler.AuthHandler;
 import launchserver.auth.handler.CachedAuthHandler;
 import launchserver.auth.handler.FileAuthHandler;
 import launchserver.auth.limiter.AuthLimiterConfig;
+import launchserver.auth.limiter.AuthLimiterIPConfig;
 import launchserver.auth.provider.AuthProvider;
 import launchserver.auth.provider.DigestAuthProvider;
 import launchserver.binary.*;
@@ -59,6 +60,8 @@ public final class LaunchServer implements Runnable, AutoCloseable
     public final Path dir;
     @LauncherAPI
     public final Path configFile;
+    @LauncherAPI
+    public final Path ipConfigFile;
     @LauncherAPI
     public final Path publicKeyFile;
     @LauncherAPI
@@ -108,6 +111,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
         // Setup config locations
         this.dir = dir;
         configFile = dir.resolve("LaunchServer.cfg");
+        ipConfigFile = dir.resolve("ListIpConnection.json");
         publicKeyFile = dir.resolve("public.key");
         privateKeyFile = dir.resolve("private.key");
         updatesDir = dir.resolve("updates");
@@ -174,6 +178,17 @@ public final class LaunchServer implements Runnable, AutoCloseable
             config = new Config(TextConfigReader.read(reader, true));
         }
         config.verify();
+
+        // Read IpList config
+        LogHelper.info("Reading IP Connection List file");
+        try
+        {
+            AuthLimiterIPConfig.load(ipConfigFile.toFile());
+        }
+        catch (Exception error)
+        {
+            if (LogHelper.isDebugEnabled()) LogHelper.error(error);
+        }
 
         // anti-brutforce
         limiter = new AuthLimiter(this);

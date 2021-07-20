@@ -21,9 +21,9 @@ public class AuthLimiterConfig extends ConfigObject
     @LauncherAPI
     public boolean blockOnConnect;
     @LauncherAPI
-    public ListConfigEntry allowIp;
+    public boolean useAllowIp;
     @LauncherAPI
-    public ListConfigEntry blockIp;
+    public boolean useBlockIp;
 
     @LauncherAPI
     public AuthLimiterConfig(BlockConfigEntry block)
@@ -38,7 +38,7 @@ public class AuthLimiterConfig extends ConfigObject
         authBannedString = block.hasEntry("authBannedString") ?
                 block.getEntryValue("authBannedString", StringConfigEntry.class) : "Ваш IP заблокирован!";
         blockOnConnect = block.getEntryValue("blockOnConnect", BooleanConfigEntry.class);
-        allowIp = block.getEntry("allowIp", ListConfigEntry.class);
-        blockIp = block.getEntry("blockIp", ListConfigEntry.class);
+        useAllowIp = block.getEntryValue("useAllowIp", BooleanConfigEntry.class);
+        useBlockIp = block.getEntryValue("useBlockIp", BooleanConfigEntry.class);
     }
 }
