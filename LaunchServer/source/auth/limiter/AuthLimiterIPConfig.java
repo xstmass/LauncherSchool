@@ -31,8 +31,7 @@ public class AuthLimiterIPConfig
             if (file.length() > 2) {
                 try
                 {
-                    AuthLimiterIPConfig authLimiterIPConfig = gson.fromJson(new JsonReader(new FileReader(file)), AuthLimiterIPConfig.class);
-                    Instance = authLimiterIPConfig;
+                    Instance = gson.fromJson(new JsonReader(new FileReader(file)), AuthLimiterIPConfig.class);
                     return;
                 }
                 catch (FileNotFoundException error)
@@ -44,9 +43,8 @@ public class AuthLimiterIPConfig
         }
 
         LogHelper.subWarning("IP List file not found! Creating file...");
-        AuthLimiterIPConfig IpConfig = new AuthLimiterIPConfig();
-        Instance = IpConfig;
-        IpConfig.saveIPConfig();
+        Instance = new AuthLimiterIPConfig();
+        Instance.saveIPConfig();
     }
 
     public void saveIPConfig() throws Exception
