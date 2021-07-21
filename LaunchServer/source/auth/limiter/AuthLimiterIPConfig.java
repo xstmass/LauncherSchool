@@ -2,43 +2,44 @@ package launchserver.auth.limiter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
-import com.google.gson.stream.JsonReader;
+import launcher.helper.IOHelper;
 import launcher.helper.LogHelper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuthLimiterIPConfig
 {
-    public static File ipConfigFile;
+    public static Path ipConfigFile;
     public static Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
-    public static AuthLimiterIPConfig Instance;
+    public static AuthLimiterIPConfig Instance; // С этим сами разбирайтесь)
 
     @Expose
     List<String> allowIp = new ArrayList<>();
     @Expose
     List<String> blockIp = new ArrayList<>();
 
-    public static void load(File file) throws Exception {
+    public static void load(Path file) throws Exception {
         ipConfigFile = file;
-        if (file.exists()) {
+        if (IOHelper.exists(ipConfigFile)) {
             LogHelper.subDebug("IP List file found! Loading...");
-            if (file.length() > 2) {
-                try
-                {
-                    Instance = gson.fromJson(new JsonReader(new FileReader(file)), AuthLimiterIPConfig.class);
-                    return;
-                }
-                catch (FileNotFoundException error)
-                {
-                    LogHelper.subWarning("Ip List not reading!");
-                    if (LogHelper.isDebugEnabled()) LogHelper.error(error);
-                }
+            try
+            {
+                Instance = gson.fromJson(IOHelper.newReader(ipConfigFile), AuthLimiterIPConfig.class);
+                return;
+            }
+            catch (JsonIOException | IOException error) {
+                LogHelper.subWarning("Ip List not reading!");
+                if (LogHelper.isDebugEnabled()) LogHelper.error(error);
+            }
+            catch (JsonSyntaxException error) {
+                LogHelper.subWarning("Invalid file syntax!");
+                if (LogHelper.isDebugEnabled()) LogHelper.error(error);
             }
         }
 
@@ -49,11 +50,7 @@ public class AuthLimiterIPConfig
 
     public void saveIPConfig() throws Exception
     {
-        if (!ipConfigFile.exists()) ipConfigFile.createNewFile();
-
-        FileWriter fw = new FileWriter(ipConfigFile, false);
-        fw.write(gson.toJson(this));
-        fw.close();
+        gson.toJson(this, IOHelper.newWriter(ipConfigFile));
     }
 
     public List<String> getAllowIp() {

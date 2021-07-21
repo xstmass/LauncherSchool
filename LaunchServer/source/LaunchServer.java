@@ -183,7 +183,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
         LogHelper.info("Reading IP Connection List file");
         try
         {
-            AuthLimiterIPConfig.load(ipConfigFile.toFile());
+            AuthLimiterIPConfig.load(ipConfigFile);
         }
         catch (Exception error)
         {
