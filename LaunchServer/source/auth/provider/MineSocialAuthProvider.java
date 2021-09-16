@@ -8,6 +8,8 @@ import launchserver.helpers.HTTPRequestHelper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -40,7 +42,8 @@ public class MineSocialAuthProvider extends AuthProvider
         // https://wiki.vg/Authentication#Payload
         JsonObject request = Json.object().
                 add("agent", Json.object().add("name", "Minecraft").add("version", 1)).
-                add("username", login).add("password", password).add("clientToken", clientToken);
+                add("username", login).add("password", getHash(password)).add("clientToken", clientToken).
+                add("crypto", "SHA-1");
 
         // Verify there's no error
         JsonObject response = HTTPRequestHelper.makeAuthlibRequest(URL, request, "MineSocial");
@@ -69,5 +72,37 @@ public class MineSocialAuthProvider extends AuthProvider
     public void close()
     {
         // Do nothing
+    }
+
+    /**
+     * Класс, отвечающий за безопасность отправляемых данных
+     * на сервер MineSocial.NET (ну хотя бы попытка)
+     *
+     * Функция предназначена для обертки пароля в SHA1,
+     * где он сверяется с BCrypt на стороне сервиса
+     *
+     * Я не могу хранить данные в открытом виде, поэтому хотя бы так.
+     **/
+
+    // TODO: Сверить хеш после технических работ
+    private static String getHash(String password)
+    {
+        try
+        {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] array = md.digest(password.getBytes());
+            StringBuffer sb = new StringBuffer();
+
+            for (int i = 0; i < array.length; ++i)
+            {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+            }
+            return sb.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            // Need?
+            return null;
+        }
     }
 }
