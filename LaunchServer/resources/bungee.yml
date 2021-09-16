@@ -1,8 +1,0 @@
-name: LaunchServer
-description: "KeeperJerry's NekroLaunchServer"
-version: 1.0
-
-author: "KeeperJerry & sashok724 LLC"
-website: 'https://launcher-sashok724.keeperjerry.ru/'
-
-main: launchserver.plugin.bungee.LaunchServerPluginBungee
