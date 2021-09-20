@@ -96,7 +96,7 @@ public class MineSocialAuthProvider extends AuthProvider
             for (byte b : array) {
                 sb.append(Integer.toHexString((b & 0xFF) | 0x100), 1, 3);
             }
-            return sb.toString();
+            return sb.toString().toLowerCase(); // На всякий случай
         }
         catch (NoSuchAlgorithmException e)
         {
