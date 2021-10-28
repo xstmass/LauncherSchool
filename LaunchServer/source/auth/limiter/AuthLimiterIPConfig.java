@@ -15,9 +15,9 @@ import java.util.List;
 
 public class AuthLimiterIPConfig
 {
-    public static Path ipConfigFile;
+    public static Path ipConfigPath;
     public static Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
-    public static AuthLimiterIPConfig Instance; // С этим сами разбирайтесь)
+    public static AuthLimiterIPConfig Instance;
 
     @Expose
     List<String> allowIp = new ArrayList<>();
@@ -25,12 +25,12 @@ public class AuthLimiterIPConfig
     List<String> blockIp = new ArrayList<>();
 
     public static void load(Path file) throws Exception {
-        ipConfigFile = file;
-        if (IOHelper.exists(ipConfigFile)) {
+        ipConfigPath = file;
+        if (IOHelper.exists(ipConfigPath)) {
             LogHelper.subDebug("IP List file found! Loading...");
             try
             {
-                Instance = gson.fromJson(IOHelper.newReader(ipConfigFile), AuthLimiterIPConfig.class);
+                Instance = gson.fromJson(IOHelper.newReader(ipConfigPath), AuthLimiterIPConfig.class);
                 return;
             }
             catch (JsonIOException | IOException error) {
@@ -50,7 +50,13 @@ public class AuthLimiterIPConfig
 
     public void saveIPConfig() throws Exception
     {
-        gson.toJson(this, IOHelper.newWriter(ipConfigFile));
+        File ipConfigFile = ipConfigPath.toFile();
+        if (!ipConfigFile.exists()) ipConfigFile.createNewFile();
+
+        FileWriter fw = new FileWriter(ipConfigFile, false);
+        fw.write(gson.toJson(this));
+        fw.close();
+        //gson.toJson(this, IOHelper.newWriter(ipConfigPath));
     }
 
     public List<String> getAllowIp() {

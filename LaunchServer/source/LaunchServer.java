@@ -61,7 +61,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
     @LauncherAPI
     public final Path configFile;
     @LauncherAPI
-    public final Path ipConfigFile;
+    public final Path ipConfigPath;
     @LauncherAPI
     public final Path publicKeyFile;
     @LauncherAPI
@@ -111,7 +111,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
         // Setup config locations
         this.dir = dir;
         configFile = dir.resolve("LaunchServer.cfg");
-        ipConfigFile = dir.resolve("ListIpConnection.json");
+        ipConfigPath = dir.resolve("ListIpConnection.json");
         publicKeyFile = dir.resolve("public.key");
         privateKeyFile = dir.resolve("private.key");
         updatesDir = dir.resolve("updates");
@@ -183,7 +183,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
         LogHelper.info("Reading IP Connection List file");
         try
         {
-            AuthLimiterIPConfig.load(ipConfigFile);
+            AuthLimiterIPConfig.load(ipConfigPath);
         }
         catch (Exception error)
         {
