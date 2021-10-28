@@ -7,7 +7,7 @@ var config = {
     // Auth config
     newsURL: "https://launcher-sashok724.keeperjerry.ru/", // News WebView URL
     linkText: "Забыли пароль?", // Text for link under "Auth" button
-    linkURL: new java.net.URL("https://keeperjerry.ru/"), // URL for link under "Auth" button
+    linkURL: new java.net.URL("https://mirror.keeperjerry.ru/"), // URL for link under "Auth" button
 
     // Settings defaults
     settingsMagic: 0xC0DE5, // Ancient magic, don't touch
@@ -23,6 +23,10 @@ var config = {
 
 // ====== DON'T TOUCH! ====== //
 var dir = IOHelper.HOME_DIR.resolve(config.dir);
+if (JVMHelper.OS_TYPE == JVMHelperOS.MUSTDIE)
+{
+    dir = IOHelper.HOME_DIR_WIN.resolve(config.dir);
+}
 if (!IOHelper.isDir(dir)) {
     java.nio.file.Files.createDirectory(dir);
 }

@@ -60,6 +60,8 @@ public final class IOHelper
     @LauncherAPI
     public static final Path HOME_DIR = Paths.get(System.getProperty("user.home"));
     @LauncherAPI
+    public static final Path HOME_DIR_WIN = Paths.get(System.getProperty("user.home") + "\\AppData\\Roaming");
+    @LauncherAPI
     public static final Path WORKING_DIR = Paths.get(System.getProperty("user.dir"));
 
     // Open options - as arrays
