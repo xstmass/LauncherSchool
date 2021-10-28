@@ -58,14 +58,14 @@ public final class RequestTextureProvider extends TextureProvider
     }
 
     @Override
-    public Texture getCloakTexture(UUID uuid, String username) throws IOException
-    {
-        return getTexture(getTextureURL(cloakURL, uuid, username), true);
-    }
-
-    @Override
     public Texture getSkinTexture(UUID uuid, String username) throws IOException
     {
         return getTexture(getTextureURL(skinURL, uuid, username), false);
+    }
+
+    @Override
+    public Texture getCloakTexture(UUID uuid, String username) throws IOException
+    {
+        return getTexture(getTextureURL(cloakURL, uuid, username), true);
     }
 }

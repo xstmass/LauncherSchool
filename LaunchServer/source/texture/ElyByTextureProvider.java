@@ -1,32 +1,17 @@
 package launchserver.texture;
 
 import launcher.client.PlayerProfile.Texture;
-import launcher.helper.LogHelper;
 import launcher.serialize.config.entry.BlockConfigEntry;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.UUID;
 
 public class ElyByTextureProvider extends TextureProvider
 {
+    protected CacheTextureProvider cacheTextureProvider;
+
     public ElyByTextureProvider(BlockConfigEntry block)
     {
         super(block);
-    }
-
-    private static Texture getTexture(String url, boolean cloak) throws IOException
-    {
-        LogHelper.debug("Getting texture: '%s'", url);
-        try
-        {
-            return new Texture(url, cloak);
-        }
-        catch (FileNotFoundException ignored)
-        {
-            if (LogHelper.isDebugEnabled()) LogHelper.subDebug("Texture not set or not found! Maybe problem with you proxy!");
-            return null; // Simply not found
-        }
     }
 
     @Override
@@ -36,14 +21,14 @@ public class ElyByTextureProvider extends TextureProvider
     }
 
     @Override
-    public Texture getCloakTexture(UUID uuid, String username) throws IOException
+    public synchronized Texture getSkinTexture(UUID uuid, String username)
     {
-        return getTexture(String.format("http://skinsystem.ely.by/cloaks/%s.png", username), true);
+        return cacheTextureProvider.getCached(uuid, username, "http://skinsystem.ely.by/profile/", "https://sessionserver.minesocial.net/session/minecraft/profile/", "ElyBy").skin;
     }
 
     @Override
-    public Texture getSkinTexture(UUID uuid, String username) throws IOException
+    public synchronized Texture getCloakTexture(UUID uuid, String username)
     {
-        return getTexture(String.format("http://skinsystem.ely.by/skins/%s.png", username), false);
+        return cacheTextureProvider.getCached(uuid, username, "http://skinsystem.ely.by/profile/", "https://sessionserver.minesocial.net/session/minecraft/profile/", "ElyBy").cloak;
     }
 }
