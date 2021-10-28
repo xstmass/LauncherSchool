@@ -61,24 +61,31 @@ public final class AuthResponse extends Response
         AuthProviderResult result;
         try
         {
-            if (AuthLimiterIPConfig.Instance.getBlockIp().stream().anyMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect && server.config.authLimit && server.config.authLimitConfig.useBlockIp)
+            // Лесенка чтоб ее
+            if (server.config.authLimit)
             {
-                AuthProvider.authError(server.config.authLimitConfig.authBannedString);
-                return;
-            }
-
-            if (AuthLimiterIPConfig.Instance.getAllowIp().stream().noneMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect && server.config.authLimit && server.config.authLimitConfig.onlyAllowIp)
-            {
-                AuthProvider.authError(server.config.authLimitConfig.authNotWhitelistString);
-                return;
-            }
-
-            if (AuthLimiterIPConfig.Instance.getAllowIp().stream().noneMatch(s -> s.equals(ip)) && server.config.authLimit && server.config.authLimitConfig.useAllowIp)
-            {
-                if (server.limiter.isLimit(ip))
+                if (AuthLimiterIPConfig.Instance.getBlockIp().stream().anyMatch(s -> s.equals(ip)) && server.config.authLimitConfig.useBlockIp)
                 {
-                    AuthProvider.authError(server.config.authLimitConfig.authRejectString);
+                    AuthProvider.authError(server.config.authLimitConfig.authBannedString);
                     return;
+                }
+
+                if (AuthLimiterIPConfig.Instance.getAllowIp().stream().noneMatch(s -> s.equals(ip)))
+                {
+                    if (server.config.authLimitConfig.onlyAllowIp)
+                    {
+                        AuthProvider.authError(server.config.authLimitConfig.authNotWhitelistString);
+                        return;
+                    }
+
+                    if (server.config.authLimitConfig.useAllowIp)
+                    {
+                        if (server.limiter.isLimit(ip))
+                        {
+                            AuthProvider.authError(server.config.authLimitConfig.authRejectString);
+                            return;
+                        }
+                    }
                 }
             }
 

@@ -46,20 +46,22 @@ public final class ResponseThread implements Runnable
     @Override
     public void run()
     {
-        if (AuthLimiterIPConfig.Instance.getAllowIp().stream().noneMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect && server.config.authLimit && server.config.authLimitConfig.onlyAllowIp)
+        if (server.config.authLimit && !server.config.authLimitConfig.blockOnConnect)
         {
-            if (!server.serverSocketHandler.logConnections) LogHelper.debug("Blocked connection from %s [Not found in Allow List]", ip);
-            return;
+            if (AuthLimiterIPConfig.Instance.getAllowIp().stream().noneMatch(s -> s.equals(ip)) && server.config.authLimitConfig.onlyAllowIp)
+            {
+                if (!server.serverSocketHandler.logConnections) LogHelper.debug("Blocked connection from %s [Not found in Allow List]", ip);
+                return;
+            }
+
+            if (AuthLimiterIPConfig.Instance.getBlockIp().stream().anyMatch(s -> s.equals(ip)) && server.config.authLimitConfig.useBlockIp)
+            {
+                if (!server.serverSocketHandler.logConnections) LogHelper.debug("Blocked connection from %s [Found in Block List]", ip);
+                return;
+            }
         }
-        else if (AuthLimiterIPConfig.Instance.getBlockIp().stream().anyMatch(s -> s.equals(ip)) && !server.config.authLimitConfig.blockOnConnect && server.config.authLimit && server.config.authLimitConfig.useBlockIp)
-        {
-            if (!server.serverSocketHandler.logConnections) LogHelper.debug("Blocked connection from %s [Found in Block List]", ip);
-            return;
-        }
-        else
-        {
-            if (!server.serverSocketHandler.logConnections) LogHelper.debug("Connection from %s", ip);
-        }
+
+        if (!server.serverSocketHandler.logConnections) LogHelper.debug("Connection from %s", ip);
 
         // Process connection
         boolean cancelled = false;
