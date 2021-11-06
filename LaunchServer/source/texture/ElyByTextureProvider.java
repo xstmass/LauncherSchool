@@ -23,12 +23,12 @@ public class ElyByTextureProvider extends TextureProvider
     @Override
     public synchronized Texture getSkinTexture(UUID uuid, String username)
     {
-        return cacheTextureProvider.getCached(uuid, username, "https://authserver.ely.by/api/users/profiles/minecraft/", "https://skinsystem.ely.by/profile/", "ElyBy").skin;
+        return cacheTextureProvider.getCached(uuid, username, "https://authserver.ely.by/api/users/profiles/minecraft/", "http://skinsystem.ely.by/profile/", "ElyBy").skin;
     }
 
     @Override
     public synchronized Texture getCloakTexture(UUID uuid, String username)
     {
-        return cacheTextureProvider.getCached(uuid, username, "https://authserver.ely.by/api/users/profiles/minecraft/", "https://skinsystem.ely.by/profile/", "ElyBy").cloak;
+        return cacheTextureProvider.getCached(uuid, username, "https://authserver.ely.by/api/users/profiles/minecraft/", "http://skinsystem.ely.by/profile/", "ElyBy").cloak;
     }
 }
