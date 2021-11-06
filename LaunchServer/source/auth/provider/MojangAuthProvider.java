@@ -56,9 +56,9 @@ public final class MojangAuthProvider extends AuthProvider
         // Parse JSON data
         JsonObject selectedProfile = response.get("selectedProfile").asObject();
         String username = selectedProfile.get("name").asString();
-        String accessToken = response.get("clientToken").asString();
+        String accessToken = response.get("accessToken").asString(); // O.o
         UUID uuid = UUID.fromString(UUID_REGEX.matcher(selectedProfile.get("id").asString()).replaceFirst("$1-$2-$3-$4-$5"));
-        String launcherToken = response.get("accessToken").asString();
+        String launcherToken = response.get("clientToken").asString(); // o.O
 
         // We're done
         return new AuthlibAuthProviderResult(username, accessToken, uuid, launcherToken);
