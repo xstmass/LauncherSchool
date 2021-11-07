@@ -48,7 +48,7 @@ public final class AuthRequest extends Request<Result>
         readError(input);
         PlayerProfile pp = new PlayerProfile(input);
         int jwt_length = input.readInt();
-        String accessToken = input.readASCII(jwt_length);
+        String accessToken = input.readASCII(-jwt_length);
         return new Result(pp, accessToken);
     }
 

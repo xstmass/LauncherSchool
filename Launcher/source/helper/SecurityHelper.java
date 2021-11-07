@@ -49,6 +49,8 @@ public final class SecurityHelper
     public static final String CERTIFICATE_DIGEST = "b87c079e3bf6e709860e05e283678c857b6a27916c2ba280a212f78f1a2ec20a";
     @LauncherAPI
     public static final String HEX = "0123456789abcdef";
+    @LauncherAPI
+    public static final String JWT = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.";
 
     // Random generator constants
     private static final char[] VOWELS = {'e', 'u', 'i', 'o', 'a'};
@@ -200,12 +202,7 @@ public final class SecurityHelper
     public static boolean isValidToken(CharSequence token)
     {
         // return token.length() == TOKEN_STRING_LENGTH && token.chars().allMatch(ch -> HEX.indexOf(ch) >= 0);
-        return token.chars().allMatch(ch ->{
-            if(HEX.indexOf(ch) >= 0)
-                return true;
-            System.err.printf("Char '%s' isInvalid!\n",ch);
-            return false;
-        });
+        return token.chars().allMatch(ch -> JWT.indexOf(ch) >= 0);
     }
 
     @LauncherAPI
