@@ -434,7 +434,8 @@ public final class ClientLauncher
 
             // Client params
             pp = new PlayerProfile(input);
-            accessToken = SecurityHelper.verifyToken(input.readASCII(-SecurityHelper.TOKEN_STRING_LENGTH));
+            int length = input.readInt();
+            accessToken = SecurityHelper.verifyToken(input.readASCII(-length));
             autoEnter = input.readBoolean();
             fullScreen = input.readBoolean();
             ram = input.readVarInt();
@@ -453,7 +454,8 @@ public final class ClientLauncher
 
             // Client params
             pp.write(output);
-            output.writeASCII(accessToken, -SecurityHelper.TOKEN_STRING_LENGTH);
+            output.writeInt(accessToken.length());
+            output.writeASCII(accessToken, -accessToken.length());
             output.writeBoolean(autoEnter);
             output.writeBoolean(fullScreen);
             output.writeVarInt(ram);

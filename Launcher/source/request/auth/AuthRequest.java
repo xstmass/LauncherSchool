@@ -47,7 +47,8 @@ public final class AuthRequest extends Request<Result>
         // Read UUID and access token
         readError(input);
         PlayerProfile pp = new PlayerProfile(input);
-        String accessToken = input.readASCII(-SecurityHelper.TOKEN_STRING_LENGTH);
+        int jwt_length = input.readInt();
+        String accessToken = input.readASCII(jwt_length);
         return new Result(pp, accessToken);
     }
 

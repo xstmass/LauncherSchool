@@ -23,7 +23,8 @@ public final class JoinServerResponse extends Response
     public void reply() throws IOException
     {
         String username = VerifyHelper.verifyUsername(input.readString(64));
-        String accessToken = SecurityHelper.verifyToken(input.readASCII(-SecurityHelper.TOKEN_STRING_LENGTH));
+        int length = input.readInt();
+        String accessToken = SecurityHelper.verifyToken(input.readASCII(-length));
         String serverID = JoinServerRequest.verifyServerID(input.readASCII(41)); // With minus sign
 
         // Try join server with auth handler

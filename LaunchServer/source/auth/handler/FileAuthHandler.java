@@ -251,7 +251,8 @@ public abstract class FileAuthHandler extends AuthHandler
             username = VerifyHelper.verifyUsername(input.readString(64));
             if (input.readBoolean())
             {
-                accessToken = SecurityHelper.verifyToken(input.readASCII(-SecurityHelper.TOKEN_STRING_LENGTH));
+                int length = input.readInt();
+                accessToken = SecurityHelper.verifyToken(input.readASCII(-length));
                 if (input.readBoolean())
                 {
                     serverID = JoinServerRequest.verifyServerID(input.readASCII(41));
@@ -266,7 +267,8 @@ public abstract class FileAuthHandler extends AuthHandler
             output.writeBoolean(accessToken != null);
             if (accessToken != null)
             {
-                output.writeASCII(accessToken, -SecurityHelper.TOKEN_STRING_LENGTH);
+                output.writeInt(accessToken.length());
+                output.writeASCII(accessToken, -accessToken.length());
                 output.writeBoolean(serverID != null);
                 if (serverID != null)
                 {

@@ -35,8 +35,8 @@ public final class SecurityHelper
     // Algorithm size constants
     @LauncherAPI
     public static final int TOKEN_LENGTH = 16;
-    @LauncherAPI
-    public static final int TOKEN_STRING_LENGTH = TOKEN_LENGTH << 1;
+   /* @LauncherAPI
+    public static final int TOKEN_STRING_LENGTH = TOKEN_LENGTH << 1;*/
     @LauncherAPI
     public static final int RSA_KEY_LENGTH_BITS = 2048;
     @LauncherAPI
@@ -199,7 +199,13 @@ public final class SecurityHelper
     @LauncherAPI
     public static boolean isValidToken(CharSequence token)
     {
-        return token.length() == TOKEN_STRING_LENGTH && token.chars().allMatch(ch -> HEX.indexOf(ch) >= 0);
+        // return token.length() == TOKEN_STRING_LENGTH && token.chars().allMatch(ch -> HEX.indexOf(ch) >= 0);
+        return token.chars().allMatch(ch ->{
+            if(HEX.indexOf(ch) >= 0)
+                return true;
+            System.err.printf("Char '%s' isInvalid!\n",ch);
+            return false;
+        });
     }
 
     @LauncherAPI
