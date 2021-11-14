@@ -17,7 +17,7 @@ pack200 Launcher.pack.gz Launcher.jar
 
 # Build LaunchServer.jar
 echo Building LaunchServer.jar...
-jar -uf LaunchServer.jar Launcher.pack.gz #buildnumber
+jar -uf LaunchServer.jar Launcher.pack.gz buildnumber
 pack200 -E9 -Htrue -mlatest -Upass -r LaunchServer.jar
 jarsigner -keystore build/keeperjerry.jks -storepass PSP1448 -sigfile LAUNCHER LaunchServer.jar keeperjerry
 rm Launcher.pack.gz
