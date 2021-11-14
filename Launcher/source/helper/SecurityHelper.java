@@ -201,6 +201,7 @@ public final class SecurityHelper
     @LauncherAPI
     public static boolean isValidToken(CharSequence token)
     {
+        // TODO: Проверить обратную совместимость с 32 символа acsessToken (MineSocial/Authlib самопис)
         // return token.length() == TOKEN_STRING_LENGTH && token.chars().allMatch(ch -> HEX.indexOf(ch) >= 0);
         return token.chars().allMatch(ch -> JWT.indexOf(ch) >= 0);
     }

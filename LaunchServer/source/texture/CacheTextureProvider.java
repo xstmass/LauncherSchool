@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+// TODO: Проверить работоспособность класса
+// ElyBy работал нестабильно, пока не вынес все в другой класс
 public class CacheTextureProvider
 {
     @LauncherAPI
