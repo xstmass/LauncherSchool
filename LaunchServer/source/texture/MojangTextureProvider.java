@@ -12,7 +12,7 @@ public final class MojangTextureProvider extends TextureProvider
         super(block);
     }
 
-    protected CacheTextureProvider cacheTextureProvider;
+    protected CacheTextureProvider cacheTextureProvider = new CacheTextureProvider();
 
     @Override
     public void close()

@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-// TODO: Проверить работоспособность класса
-// ElyBy работал нестабильно, пока не вынес все в другой класс
 public class CacheTextureProvider
 {
     @LauncherAPI
@@ -29,11 +27,11 @@ public class CacheTextureProvider
             VerifyHelper.L_NOT_NEGATIVE, "launcher.mysql.cacheDurationHours can't be < 0") * 60L * 60L * 1000L;
 
     // Instance
-    private final Map<String, CacheData> cache = new HashMap<>(1024);
+    private final Map<String, CacheDataTexture> cache = new HashMap<>(1024);
 
-    protected CacheData getCached(UUID uuid, String username, String in_usersURL, String in_profileURL, String serviceName)
+    protected CacheDataTexture getCached(UUID uuid, String username, String in_usersURL, String in_profileURL, String serviceName)
     {
-        CacheData result = cache.get(username);
+        CacheDataTexture result = cache.get(username);
 
         // Have cached result?
         if (result != null && System.currentTimeMillis() < result.until)
@@ -47,7 +45,6 @@ public class CacheTextureProvider
 
         try
         {
-            // TODO Don't query UUID by username if using mojang auth handler (not implemented yet)
             URL uuidURL = new URL(in_usersURL + IOHelper.urlEncode(username));
             JsonObject uuidResponse = HTTPRequestHelper.makeAuthlibRequest(uuidURL, null, serviceName);
             if (uuidResponse == null)
@@ -57,7 +54,7 @@ public class CacheTextureProvider
             String uuidResolved = uuidResponse.get("id").asString();
 
             // Obtain player profile
-            URL profileURL = new URL(in_profileURL + uuidResolved);
+            URL profileURL = new URL(in_profileURL + IOHelper.urlEncode(serviceName.equals("ElyBy") ? username : uuidResolved )); // Как я это не хотел делать...
             JsonObject profileResponse = HTTPRequestHelper.makeAuthlibRequest(profileURL, null, serviceName);
             if (profileResponse == null)
             {
@@ -109,36 +106,14 @@ public class CacheTextureProvider
         return result;
     }
 
-    private CacheData cache(String username, Texture skin, Texture cloak, Throwable exc)
+    private CacheDataTexture cache(String username, Texture skin, Texture cloak, Throwable exc)
     {
         long until = CACHE_DURATION_MS == 0L ? Long.MIN_VALUE : System.currentTimeMillis() + CACHE_DURATION_MS;
-        CacheData data = exc == null ? new CacheData(skin, cloak, until) : new CacheData(exc, until);
+        CacheDataTexture data = exc == null ? new CacheDataTexture(skin, cloak, until) : new CacheDataTexture(exc, until);
         if (CACHE_DURATION_MS != 0L)
         {
             cache.put(username, data);
         }
         return data;
-    }
-
-    protected static final class CacheData
-    {
-        protected final Texture skin, cloak;
-        protected final Throwable exc;
-        protected final long until;
-
-        private CacheData(Texture skin, Texture cloak, long until)
-        {
-            this.skin = skin;
-            this.cloak = cloak;
-            this.until = until;
-            exc = null;
-        }
-
-        private CacheData(Throwable exc, long until)
-        {
-            this.exc = exc;
-            this.until = until;
-            skin = cloak = null;
-        }
     }
 }

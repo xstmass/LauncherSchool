@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class MineSocialTextureProvider extends TextureProvider
 {
-    protected CacheTextureProvider cacheTextureProvider;
+    protected CacheTextureProvider cacheTextureProvider = new CacheTextureProvider();
     public MineSocialTextureProvider(BlockConfigEntry block)
     {
         super(block);
