@@ -43,7 +43,7 @@ public class ElyByTextureProvider extends TextureProvider
         // Do nothing
     }
 
-    private CacheData getCached(UUID uuid, String username, String in_usersURL, String in_profileURL, String serviceName)
+    private CacheData getCached(String username)
     {
         CacheData result = cache.get(username);
 
@@ -60,8 +60,8 @@ public class ElyByTextureProvider extends TextureProvider
         try
         {
             // TODO Don't query UUID by username if using mojang auth handler (not implemented yet)
-            URL uuidURL = new URL(in_usersURL + IOHelper.urlEncode(username));
-            JsonObject uuidResponse = HTTPRequestHelper.makeAuthlibRequest(uuidURL, null, serviceName);
+            URL uuidURL = new URL("https://authserver.ely.by/api/users/profiles/minecraft/" + IOHelper.urlEncode(username));
+            JsonObject uuidResponse = HTTPRequestHelper.makeAuthlibRequest(uuidURL, null, "ElyBy");
             if (uuidResponse == null)
             {
                 throw new IllegalArgumentException("Empty UUID response");
@@ -69,11 +69,11 @@ public class ElyByTextureProvider extends TextureProvider
             String uuidResolved = uuidResponse.get("id").asString();
 
             // Obtain player profile
-            URL profileURL = new URL(in_profileURL + username); // ...
+            URL profileURL = new URL("http://skinsystem.ely.by/profile/" + IOHelper.urlEncode(username)); // ...
             // Я просто выпилю эту систему, если еще такие приколы найду:
             // https://wiki.vg/Mojang_API#UUID_to_Profile_and_Skin.2FCape
             // https://docs.ely.by/ru/skins-system.html => /profile/{nickname}
-            JsonObject profileResponse = HTTPRequestHelper.makeAuthlibRequest(profileURL, null, serviceName);
+            JsonObject profileResponse = HTTPRequestHelper.makeAuthlibRequest(profileURL, null, "ElyBy");
             if (profileResponse == null)
             {
                 throw new IllegalArgumentException("Empty Authlib response");
@@ -160,12 +160,12 @@ public class ElyByTextureProvider extends TextureProvider
     @Override
     public synchronized Texture getSkinTexture(UUID uuid, String username)
     {
-        return getCached(uuid, username, "https://authserver.ely.by/api/users/profiles/minecraft/", "http://skinsystem.ely.by/profile/", "ElyBy").skin;
+        return getCached(username).skin;
     }
 
     @Override
     public synchronized Texture getCloakTexture(UUID uuid, String username)
     {
-        return getCached(uuid, username, "https://authserver.ely.by/api/users/profiles/minecraft/", "http://skinsystem.ely.by/profile/", "ElyBy").cloak;
+        return getCached(username).cloak;
     }
 }
