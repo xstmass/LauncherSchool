@@ -34,6 +34,7 @@ public abstract class AuthProvider extends ConfigObject implements AutoCloseable
         registerProvider("mariadb-bcrypt", MariaDBBcryptAuthProvider::new);
         registerProvider("request", RequestAuthProvider::new);
         registerProvider("postgresql", PostgreSQLAuthProvider::new);
+        registerProvider("postgresql-bcrypt", PostgreSQLBcryptAuthProvider::new);
         registerProvider("json", JsonAuthProvider::new);
         registerProvider("sqlite", SQLiteAuthProvider::new);
     }
