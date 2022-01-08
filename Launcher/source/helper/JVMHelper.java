@@ -4,7 +4,6 @@ import com.sun.management.OperatingSystemMXBean;
 import launcher.LauncherAPI;
 import sun.misc.Unsafe;
 
-import java.io.File;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -13,7 +12,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.nio.file.Path;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Locale;
@@ -50,9 +48,7 @@ public final class JVMHelper
     public static final ClassLoader LOADER = ClassLoader.getSystemClassLoader();
 
     // Useful internal fields and constants
-    private static final String JAVA_LIBRARY_PATH = "java.library.path";
-    private static final MethodHandle MH_SET_USR_PATHS;
-    private static final MethodHandle MH_SET_SYS_PATHS;
+    public static final String JAVA_LIBRARY_PATH = "java.library.path";
     private static final Object UCP;
     private static final MethodHandle MH_UCP_ADDURL_METHOD;
     private static final MethodHandle MH_UCP_GETURLS_METHOD;
@@ -73,8 +69,6 @@ public final class JVMHelper
             // Get trusted lookup and other stuff
             Field implLookupField = Lookup.class.getDeclaredField("IMPL_LOOKUP");
             LOOKUP = (Lookup) UNSAFE.getObject(UNSAFE.staticFieldBase(implLookupField), UNSAFE.staticFieldOffset(implLookupField));
-            MH_SET_USR_PATHS = LOOKUP.findStaticSetter(ClassLoader.class, "usr_paths", String[].class);
-            MH_SET_SYS_PATHS = LOOKUP.findStaticSetter(ClassLoader.class, "sys_paths", String[].class);
 
             // Get UCP stuff1
             Class<?> ucpClass = firstClass("jdk.internal.loader.URLClassPath", "sun.misc.URLClassPath");
@@ -102,35 +96,6 @@ public final class JVMHelper
         try
         {
             MH_UCP_ADDURL_METHOD.invoke(UCP, url);
-        }
-        catch (Throwable exc)
-        {
-            throw new InternalError(exc);
-        }
-    }
-
-    @LauncherAPI
-    public static void addNativePath(Path path)
-    {
-        String stringPath = path.toString();
-
-        // Add to library path
-        String libraryPath = System.getProperty(JAVA_LIBRARY_PATH);
-        if (libraryPath == null || libraryPath.isEmpty())
-        {
-            libraryPath = stringPath;
-        }
-        else
-        {
-            libraryPath += File.pathSeparatorChar + stringPath;
-        }
-        System.setProperty(JAVA_LIBRARY_PATH, libraryPath);
-
-        // Reset usrPaths and sysPaths cache
-        try
-        {
-            MH_SET_USR_PATHS.invoke((Object) null);
-            MH_SET_SYS_PATHS.invoke((Object) null);
         }
         catch (Throwable exc)
         {
