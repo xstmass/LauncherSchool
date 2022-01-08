@@ -19,6 +19,11 @@ var config = {
     jvmMustdie32Dir: "jre-8u282-win32", jvmMustdie64Dir: "jre-8u282-win64",
     jvmLinux32Dir: "jre-8u282-linux32", jvmLinux64Dir: "jre-8u282-linux64",
     jvmMacOSXDir: "jre-8u282-macosx", jvmUnknownDir: "jre-8u282-unknown"
+
+    // Custom JRE config (!!! DON'T CHANGE !!!)
+    //jvmMustdie32Dir: "jre-17-full-win32", jvmMustdie64Dir: "jre-17-full-win64",
+    //jvmLinux32Dir: "jre-17-full-linux32", jvmLinux64Dir: "jre-17-full-linux64",
+    //jvmMacOSXDir: "jre-17-full-macosx", jvmUnknownDir: "jre-17-full-unknown"
 };
 
 // ====== DON'T TOUCH! ====== //
