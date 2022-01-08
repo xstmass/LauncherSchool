@@ -119,6 +119,8 @@ public final class ClientLauncher
             args.add(jvmProperty("os.version", "10.0"));
         }
 
+        // A fucking shitty fix
+        args.add(jvmProperty(JVMHelper.JAVA_LIBRARY_PATH, params.clientDir.resolve(NATIVES_DIR).toString()));
 
         // Add classpath and main class
         Collections.addAll(args, profile.object.getJvmArgs());
@@ -325,9 +327,6 @@ public final class ClientLauncher
 
     private static void launch(ClientProfile profile, Params params) throws Throwable
     {
-        // Add natives path
-        JVMHelper.addNativePath(params.clientDir.resolve(NATIVES_DIR));
-
         // Add client args
         Collection<String> args = new LinkedList<>();
         if (Version.compare(profile.getVersion(), "1.6.0") >= 0)
