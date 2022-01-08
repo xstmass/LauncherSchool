@@ -203,7 +203,7 @@ public final class LaunchServer implements Runnable, AutoCloseable
             LogHelper.info("Check updates from KeeperJerry...");
             try
             {
-                URL url = new URL("https://launcher-sashok724.keeperjerry.ru/versions.json");
+                URL url = new URL("https://mirror.keeperjerry.ru/launcher/v1/versions.json");
                 String file = HTTPRequestHelper.getFile(url);
                 JsonObject object = Json.parse(file).asObject();
                 String version = object.get("version").asString();
