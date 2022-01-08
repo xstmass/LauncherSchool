@@ -3,12 +3,15 @@ package com.mojang.authlib.yggdrasil;
 import com.mojang.authlib.*;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.minecraft.UserApiService;
 import launcher.helper.LogHelper;
 
 import java.net.Proxy;
 
 public class YggdrasilAuthenticationService implements AuthenticationService {
     private final Environment environment;
+
+    private Proxy proxy;
 
     public YggdrasilAuthenticationService(final Proxy proxy) {
         this(proxy, determineEnvironment());
@@ -24,11 +27,12 @@ public class YggdrasilAuthenticationService implements AuthenticationService {
 
     public YggdrasilAuthenticationService(final Proxy proxy, final String clientToken, final Environment environment) {
         this.environment = environment;
-        LogHelper.debug("Patched AuthenticationService created: '%s'", new Object[] { clientToken });
+        this.proxy = proxy;
+        LogHelper.debug("Patched AuthenticationService created: '%s'", clientToken);
     }
 
     private static Environment determineEnvironment() {
-        return EnvironmentParser.getEnvironmentFromProperties().orElse(YggdrasilEnvironment.PROD);
+        return EnvironmentParser.getEnvironmentFromProperties().orElse(YggdrasilEnvironment.PROD.getEnvironment());
     }
 
     public UserAuthentication createUserAuthentication(final Agent agent) {
@@ -44,6 +48,10 @@ public class YggdrasilAuthenticationService implements AuthenticationService {
     }
 
     public YggdrasilSocialInteractionsService createSocialInteractionsService(final String accessToken) throws AuthenticationException {
-        return new YggdrasilSocialInteractionsService(this, accessToken, this.environment);
+        return (YggdrasilSocialInteractionsService)new YggdrasilSocialInteractionsService(this, accessToken, this.environment);
+    }
+
+    public UserApiService createUserApiService(final String accessToken) throws AuthenticationException {
+        return (UserApiService)new YggdrasilUserApiService(accessToken, proxy, environment);
     }
 }
