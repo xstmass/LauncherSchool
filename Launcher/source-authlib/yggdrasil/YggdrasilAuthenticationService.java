@@ -4,7 +4,6 @@ import com.mojang.authlib.*;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
-import launcher.helper.LogHelper;
 
 import java.net.Proxy;
 
@@ -28,7 +27,6 @@ public class YggdrasilAuthenticationService implements AuthenticationService {
     public YggdrasilAuthenticationService(final Proxy proxy, final String clientToken, final Environment environment) {
         this.environment = environment;
         this.proxy = proxy;
-        LogHelper.debug("Patched AuthenticationService created: '%s'", clientToken);
     }
 
     private static Environment determineEnvironment() {
