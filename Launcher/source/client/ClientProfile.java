@@ -132,7 +132,7 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
 
     @LauncherAPI
     public String getJvmVersion() {
-        return jvmVersion.getValue() == null ? "";
+        return jvmVersion.getValue();
     }
 
     @LauncherAPI
