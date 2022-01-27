@@ -57,12 +57,12 @@ function start(args) {
     // Set JVM dir name
     LogHelper.debug("Setting JVM dir name");
     switch (JVMHelper.OS_TYPE) {
-        case JVMHelperOS.MUSTDIE: jvmDirName = JVMHelper.OS_BITS === 32 ? config.jvmMustdie32Dir : // 32-bit Mustdie
-            jvmDirName = JVMHelper.OS_BITS === 64 ? config.jvmMustdie64Dir : config.jvmUnknownDir; break; // 64-bit Mustdie
-        case JVMHelperOS.LINUX: jvmDirName = JVMHelper.OS_BITS === 32 ? config.jvmLinux32Dir : // 32-bit Linux
-            jvmDirName = JVMHelper.OS_BITS === 64 ? config.jvmLinux64Dir : config.jvmUnknownDir; break; // 64-bit Linux
-        case JVMHelperOS.MACOSX: jvmDirName = JVMHelper.OS_BITS === 64 ? config.jvmMacOSXDir : config.jvmUnknownDir; break; // 64-bit MacOSX
-        default: jvmDirName = config.jvmUnknownDir; LogHelper.warning("Unknown OS: '%s'", JVMHelper.OS_TYPE.name); break; // Unknown OS
+        case JVMHelperOS.MUSTDIE: jvmDirName = JVMHelper.OS_BITS === 32 ? "-win32" : // 32-bit Mustdie
+            jvmDirName = JVMHelper.OS_BITS === 64 ? "-win64" : "-unknown"; break; // 64-bit Mustdie
+        case JVMHelperOS.LINUX: jvmDirName = JVMHelper.OS_BITS === 32 ? "-linux32" : // 32-bit Linux
+            jvmDirName = JVMHelper.OS_BITS === 64 ? "-linux64" : "-unknown"; break; // 64-bit Linux
+        case JVMHelperOS.MACOSX: jvmDirName = JVMHelper.OS_BITS === 64 ? "-macosx" : "-unknown"; break; // 64-bit MacOSX
+        default: jvmDirName = "-unknown"; LogHelper.warning("Unknown OS: '%s'", JVMHelper.OS_TYPE.name); break; // Unknown OS
     }
 
     // Set font rendering properties

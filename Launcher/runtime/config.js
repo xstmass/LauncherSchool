@@ -13,17 +13,7 @@ var config = {
     settingsMagic: 0xC0DE5, // Ancient magic, don't touch
     autoEnterDefault: false, // Should autoEnter be enabled by default?
     fullScreenDefault: false, // Should fullScreen be enabled by default?
-    ramDefault: 1024, // Default RAM amount (0 for auto)
-
-    // Custom JRE config (!!! DON'T CHANGE !!!)
-    jvmMustdie32Dir: "jre-8u282-win32", jvmMustdie64Dir: "jre-8u282-win64",
-    jvmLinux32Dir: "jre-8u282-linux32", jvmLinux64Dir: "jre-8u282-linux64",
-    jvmMacOSXDir: "jre-8u282-macosx", jvmUnknownDir: "jre-8u282-unknown"
-
-    // Custom JRE config (!!! DON'T CHANGE !!!)
-    //jvmMustdie32Dir: "jre-17-full-win32", jvmMustdie64Dir: "jre-17-full-win64",
-    //jvmLinux32Dir: "jre-17-full-linux32", jvmLinux64Dir: "jre-17-full-linux64",
-    //jvmMacOSXDir: "jre-17-full-macosx", jvmUnknownDir: "jre-17-full-unknown"
+    ramDefault: 1024 // Default RAM amount (0 for auto)
 };
 
 // ====== DON'T TOUCH! ====== //

@@ -30,6 +30,7 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
     private final StringConfigEntry title;
     private final StringConfigEntry serverAddress;
     private final IntegerConfigEntry serverPort;
+    private final StringConfigEntry jvmVersion;
 
     //  Updater and client watch service
     private final ListConfigEntry update;
@@ -57,6 +58,7 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
         title = block.getEntry("title", StringConfigEntry.class);
         serverAddress = block.getEntry("serverAddress", StringConfigEntry.class);
         serverPort = block.getEntry("serverPort", IntegerConfigEntry.class);
+        jvmVersion = block.getEntry("jvmVersion", StringConfigEntry.class);
 
         //  Updater and client watch service
         update = block.getEntry("update", ListConfigEntry.class);
@@ -126,6 +128,11 @@ public final class ClientProfile extends ConfigObject implements Comparable<Clie
         String[] verifyArray = updateVerify.stream(StringConfigEntry.class).toArray(String[]::new);
         String[] exclusionsArray = updateExclusions.stream(StringConfigEntry.class).toArray(String[]::new);
         return new FileNameMatcher(updateArray, verifyArray, exclusionsArray);
+    }
+
+    @LauncherAPI
+    public String getJvmVersion() {
+        return jvmVersion.getValue() == null ? "";
     }
 
     @LauncherAPI

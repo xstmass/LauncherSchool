@@ -172,9 +172,10 @@ function doUpdate(profile, pp, accessToken) {
 
     // Update JVM dir
     update.resetOverlay("Обновление файлов JVM");
+    var jvmCustomDir = profile.object.block.getEntryValue("jvmVersion", StringConfigEntryClass) + jvmDirName;
     overlay.swap(0, update.overlay, function(event) {
-        var jvmDir = settings.updatesDir.resolve(jvmDirName);
-        makeUpdateRequest(jvmDirName, jvmDir, null, digest, function(jvmHDir) {
+        var jvmDir = settings.updatesDir.resolve(jvmCustomDir);
+        makeUpdateRequest(jvmCustomDir, jvmDir, null, digest, function(jvmHDir) {
             settings.lastHDirs.put(jvmDirName, jvmHDir);
 
             // Update asset dir
