@@ -22,12 +22,12 @@ public class MineSocialTextureProvider extends TextureProvider
     @Override
     public synchronized Texture getSkinTexture(UUID uuid, String username)
     {
-        return cacheTextureProvider.getCached(uuid, username, "https://api.minesocial.net/users/profiles/minecraft/", "https://sessionserver.minesocial.net/session/minecraft/profile/", "MineSocial").skin;
+        return cacheTextureProvider.getCached(uuid, username, "https://sessionserver.minesocial.net/session/minecraft/profile/", "MineSocial").skin;
     }
 
     @Override
     public synchronized Texture getCloakTexture(UUID uuid, String username)
     {
-        return cacheTextureProvider.getCached(uuid, username, "https://api.minesocial.net/users/profiles/minecraft/", "https://sessionserver.minesocial.net/session/minecraft/profile/", "MineSocial").cloak;
+        return cacheTextureProvider.getCached(uuid, username, "https://sessionserver.minesocial.net/session/minecraft/profile/", "MineSocial").cloak;
     }
 }

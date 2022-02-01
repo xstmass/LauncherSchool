@@ -23,12 +23,12 @@ public final class MojangTextureProvider extends TextureProvider
     @Override
     public synchronized Texture getSkinTexture(UUID uuid, String username)
     {
-        return cacheTextureProvider.getCached(uuid, username, "https://api.mojang.com/users/profiles/minecraft/", "https://sessionserver.mojang.com/session/minecraft/profile/", "Mojang").skin;
+        return cacheTextureProvider.getCached(uuid, username, "https://sessionserver.mojang.com/session/minecraft/profile/", "Mojang").skin;
     }
 
     @Override
     public synchronized Texture getCloakTexture(UUID uuid, String username)
     {
-        return cacheTextureProvider.getCached(uuid, username, "https://api.mojang.com/users/profiles/minecraft/", "https://sessionserver.mojang.com/session/minecraft/profile/", "Mojang").cloak;
+        return cacheTextureProvider.getCached(uuid, username, "https://sessionserver.mojang.com/session/minecraft/profile/", "Mojang").cloak;
     }
 }

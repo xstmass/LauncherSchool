@@ -29,9 +29,12 @@ public class CacheTextureProvider
     // Instance
     private final Map<String, CacheDataTexture> cache = new HashMap<>(1024);
 
-    protected CacheDataTexture getCached(UUID uuid, String username, String in_usersURL, String in_profileURL, String serviceName)
+    // Since November 2020, Mojang stopped supporting the timestamp parameter.
+    // If a timestamp is provided, it is silently ignored and the current uuid is returned. Please remind them to fix this here:
+    // https://bugs.mojang.com/browse/WEB-3367
+    protected CacheDataTexture getCached(UUID uuid, String username, String in_profileURL, String serviceName)
     {
-        CacheDataTexture result = cache.get(username);
+        CacheDataTexture result = cache.get(uuid);
 
         // Have cached result?
         if (result != null && System.currentTimeMillis() < result.until)
@@ -45,16 +48,8 @@ public class CacheTextureProvider
 
         try
         {
-            URL uuidURL = new URL(in_usersURL + IOHelper.urlEncode(username));
-            JsonObject uuidResponse = HTTPRequestHelper.makeAuthlibRequest(uuidURL, null, serviceName);
-            if (uuidResponse == null)
-            {
-                throw new IllegalArgumentException("Empty UUID response");
-            }
-            String uuidResolved = uuidResponse.get("id").asString();
-
             // Obtain player profile
-            URL profileURL = new URL(in_profileURL + IOHelper.urlEncode(serviceName.equals("ElyBy") ? username : uuidResolved )); // Как я это не хотел делать...
+            URL profileURL = new URL(in_profileURL + IOHelper.urlEncode(serviceName.equals("ElyBy") ? username : uuid.toString())); // Как я это не хотел делать...
             JsonObject profileResponse = HTTPRequestHelper.makeAuthlibRequest(profileURL, null, serviceName);
             if (profileResponse == null)
             {

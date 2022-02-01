@@ -26,12 +26,12 @@ public class AuthlibInjectorTextureProvider extends TextureProvider
     @Override
     public synchronized Texture getSkinTexture(UUID uuid, String username)
     {
-        return cacheTextureProvider.getCached(uuid, username, urlApiInjector + "/api/profiles/minecraft", urlApiInjector + "/sessionserver/session/minecraft/profile/", "Authlib-Injector").skin;
+        return cacheTextureProvider.getCached(uuid, username, urlApiInjector + "/sessionserver/session/minecraft/profile/", "Authlib-Injector").skin;
     }
 
     @Override
     public synchronized Texture getCloakTexture(UUID uuid, String username)
     {
-        return cacheTextureProvider.getCached(uuid, username, urlApiInjector + "/api/profiles/minecraft", urlApiInjector + "/sessionserver/session/minecraft/profile/", "Authlib-Injector").cloak;
+        return cacheTextureProvider.getCached(uuid, username, urlApiInjector + "/sessionserver/session/minecraft/profile/", "Authlib-Injector").cloak;
     }
 }
