@@ -18,15 +18,18 @@ public abstract class TextureProvider extends ConfigObject implements AutoClosea
 
     static
     {
+        // Default TextureProviders
         registerProvider("void", VoidTextureProvider::new);
         registerProvider("delegate", DelegateTextureProvider::new);
+        registerProvider("request", RequestTextureProvider::new);
+
+        // Authlib TextureProviders
         registerProvider("authlib", AuthlibTextureProvider::new);
+        registerProvider("authlib-injector", AuthlibInjectorTextureProvider::new);
         registerProvider("minesocial", MineSocialTextureProvider::new);
         registerProvider("elyby", ElyByTextureProvider::new);
-
-        // Auth providers that doesn't do nothing :D
         registerProvider("mojang", MojangTextureProvider::new);
-        registerProvider("request", RequestTextureProvider::new);
+
     }
 
     @LauncherAPI

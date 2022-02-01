@@ -19,22 +19,26 @@ public abstract class AuthHandler extends ConfigObject implements AutoCloseable
 
     static
     {
+        // Default Handlers
         registerHandler("memory", MemoryAuthHandler::new);
         registerHandler("delegate", DelegateAuthHandler::new);
-        registerHandler("mojang", MojangAuthHandler::new);
-        registerHandler("authlib", AuthlibAuthHandler::new);
-        registerHandler("minesocial", MineSocialAuthHandler::new);
-        registerHandler("elyby", ElyByAuthHandler::new);
-
-        // Auth handler that doesn't do nothing :D
         registerHandler("binaryFile", BinaryFileAuthHandler::new);
         registerHandler("textFile", TextFileAuthHandler::new);
+        registerHandler("json", JsonAuthHandler::new);
+
+        // SQL and NoSQL Handlers
         registerHandler("mysql", MySQLAuthHandler::new);
         registerHandler("mysql-8", MySQL8AuthHandler::new);
         registerHandler("mariadb", MariaDBAuthHandler::new);
         registerHandler("postgresql", PostgreSQLAuthHandler::new);
-        registerHandler("json", JsonAuthHandler::new);
         registerHandler("sqlite", SQLiteAuthHandler::new);
+
+        // Authlib Handlers
+        registerHandler("authlib", AuthlibAuthHandler::new);
+        registerHandler("authlib-injector", AuthlibInjectorAuthHandler::new);
+        registerHandler("mojang", MojangAuthHandler::new);
+        registerHandler("minesocial", MineSocialAuthHandler::new);
+        registerHandler("elyby", ElyByAuthHandler::new);
     }
 
     @LauncherAPI

@@ -17,26 +17,31 @@ public abstract class AuthProvider extends ConfigObject implements AutoCloseable
 
     static
     {
+        // Default Providers
         registerProvider("accept", AcceptAuthProvider::new);
         registerProvider("reject", RejectAuthProvider::new);
         registerProvider("delegate", DelegateAuthProvider::new);
-
         registerProvider("file", FileAuthProvider::new);
-        registerProvider("mojang", MojangAuthProvider::new);
-        registerProvider("authlib", AuthlibAuthProvider::new);
-        registerProvider("minesocial", MineSocialAuthProvider::new);
-        registerProvider("elyby", ElyByAuthProvider::new);
+        registerProvider("json", JsonAuthProvider::new);
+        registerProvider("request", RequestAuthProvider::new);
+
+        // SQL and NoSQL Providers
         registerProvider("mysql", MySQLAuthProvider::new);
         registerProvider("mysql-bcrypt", MySQLBcryptAuthProvider::new);
         registerProvider("mysql-8", MySQL8AuthProvider::new);
         registerProvider("mysql-8-bcrypt", MySQL8BcryptAuthProvider::new);
         registerProvider("mariadb", MariaDBAuthProvider::new);
         registerProvider("mariadb-bcrypt", MariaDBBcryptAuthProvider::new);
-        registerProvider("request", RequestAuthProvider::new);
         registerProvider("postgresql", PostgreSQLAuthProvider::new);
         registerProvider("postgresql-bcrypt", PostgreSQLBcryptAuthProvider::new);
-        registerProvider("json", JsonAuthProvider::new);
         registerProvider("sqlite", SQLiteAuthProvider::new);
+
+        // Authlib Providers
+        registerProvider("authlib", AuthlibAuthProvider::new);
+        registerProvider("authlib-injector", AuthlibInjectorAuthProvider::new);
+        registerProvider("mojang", MojangAuthProvider::new);
+        registerProvider("minesocial", MineSocialAuthProvider::new);
+        registerProvider("elyby", ElyByAuthProvider::new);
     }
 
     @LauncherAPI
