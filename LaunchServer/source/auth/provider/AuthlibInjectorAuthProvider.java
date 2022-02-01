@@ -35,10 +35,12 @@ public class AuthlibInjectorAuthProvider extends AuthProvider
     @Override
     public AuthProviderResult auth(String login, String password, String ip) throws Throwable
     {
+        String clientToken = UUID.randomUUID().toString().replaceAll("-", "");
+
         // https://wiki.vg/Authentication#Payload
         JsonObject request = Json.object().
                 add("agent", Json.object().add("name", "Minecraft").add("version", 1)).
-                add("username", login).add("password", password);
+                add("username", login).add("password", password).add("clientToken", clientToken);
 
         // Verify there's no error
         JsonObject response = HTTPRequestHelper.makeAuthlibRequest(URL, request, "Authlib-Injector");
@@ -55,9 +57,9 @@ public class AuthlibInjectorAuthProvider extends AuthProvider
         // Parse JSON data
         JsonObject selectedProfile = response.get("selectedProfile").asObject();
         String username = selectedProfile.get("name").asString();
-        String accessToken = response.get("clientToken").asString();
+        String accessToken = response.get("accessToken").asString();
         UUID uuid = UUID.fromString(UUID_REGEX.matcher(selectedProfile.get("id").asString()).replaceFirst("$1-$2-$3-$4-$5"));
-        String launcherToken = response.get("accessToken").asString();
+        String launcherToken = response.get("clientToken").asString();
 
         // We're done
         return new AuthlibAuthProviderResult(username, accessToken, uuid, launcherToken);

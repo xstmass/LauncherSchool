@@ -9,7 +9,7 @@ import java.util.UUID;
 public class AuthlibInjectorTextureProvider extends TextureProvider
 {
     private final String urlApiInjector;
-    protected CacheTextureProvider cacheTextureProvider;
+    protected CacheTextureProvider cacheTextureProvider = new CacheTextureProvider();
 
     public AuthlibInjectorTextureProvider(BlockConfigEntry block)
     {

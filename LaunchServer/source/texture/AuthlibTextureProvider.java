@@ -11,7 +11,7 @@ public class AuthlibTextureProvider extends TextureProvider
     // Instance
     private final String setUuidURL;
     private final String setProfileURL;
-    protected CacheTextureProvider cacheTextureProvider;
+    protected CacheTextureProvider cacheTextureProvider = new CacheTextureProvider();
 
     public AuthlibTextureProvider(BlockConfigEntry block)
     {
