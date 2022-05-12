@@ -262,10 +262,7 @@ public final class HashedDir extends HashedEntry
 
             // Verify is not symlink
             // Symlinks was disallowed because modification of it's destination are ignored by DirWatcher
-            if (!allowSymlinks && (JVMHelper.OS_TYPE == OS.MUSTDIE && !dir.toRealPath().equals(dir) || JVMHelper.OS_TYPE != OS.MUSTDIE && attrs.isSymbolicLink()))
-            {
-                throw new SecurityException("Symlinks are not allowed");
-            }
+            checkSymbolicLink(dir, attrs);
 
             // Add child
             stack.add(current);
@@ -280,16 +277,24 @@ public final class HashedDir extends HashedEntry
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
         {
             // Verify is not symlink
-            if (!allowSymlinks && (JVMHelper.OS_TYPE == OS.MUSTDIE && !file.toRealPath().equals(file) || JVMHelper.OS_TYPE != OS.MUSTDIE && attrs.isSymbolicLink()))
-            {
-                throw new SecurityException("Symlinks are not allowed");
-            }
+            checkSymbolicLink(file, attrs);
 
             // Add file (may be unhashed, if exclusion)
             path.add(IOHelper.getFileName(file));
             boolean doDigest = digest && (matcher == null || matcher.shouldUpdate(path));
             current.map.put(path.removeLast(), new HashedFile(file, attrs.size(), doDigest));
             return super.visitFile(file, attrs);
+        }
+
+        private void checkSymbolicLink(Path path, BasicFileAttributes attrs) throws IOException {
+            if (
+                !allowSymlinks && (
+                    JVMHelper.OS_TYPE == OS.MUSTDIE && !path.toRealPath().equals(path) ||
+                    JVMHelper.OS_TYPE != OS.MUSTDIE && attrs.isSymbolicLink()
+                )
+            ) {
+                throw new SecurityException("Symlinks are not allowed");
+            }
         }
     }
 }
