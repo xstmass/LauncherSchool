@@ -1,0 +1,10 @@
+{
+  "id":"launchserver",
+  "name":"KeeperJerry LaunchServer",
+  "version":"1.7.5.2",
+  "description":"KeeperJerry LaunchServer",
+  "url":"launcher.keeperjerry.ru",
+  "authors":["KeeperJerry","JoCat/JCat"],
+  "dependencies":[],
+  "main":"launchserver.plugin.velocity.PluginVelocity"
+}
