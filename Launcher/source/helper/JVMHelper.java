@@ -236,6 +236,10 @@ public final class JVMHelper
             {
                 return LINUX;
             }
+            if (name.startsWith("FreeBSD"))
+            {
+                return LINUX;
+            }
             if (name.startsWith("Mac OS X"))
             {
                 return MACOSX;
