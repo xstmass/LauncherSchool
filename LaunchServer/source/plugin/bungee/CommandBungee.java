@@ -18,7 +18,7 @@ public final class CommandBungee extends Command
 
     public CommandBungee(PluginBungee plugin)
     {
-        super("launchserver", "launchserver.admin", "launcher", "ls", "l");
+        super("launchserver", "launchserver.admin", "launchserverbungee", "launcherbungee", "lsb");
         this.plugin = plugin;
     }
 
